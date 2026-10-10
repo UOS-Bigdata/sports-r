@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>제3장 선형회귀분석 – R 데이터 분석 · 재직자교육</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./d2-04-sports100-practice.html" rel="next">
+<link href="./d2-02-ggplot2.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6e4fb7f12727868f896226262ecbb89e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-58c64f851eed42c162fe1bfcb241524a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./d2-00-intro.html">2일차 · 데이터 시각화와 회귀분석</a></li><li class="breadcrumb-item"><a href="./d2-03-linear-regression.html">제3장 선형회귀분석</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="검색" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R 데이터 분석 · 재직자교육</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="검색"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">R 데이터 분석 · 재직자교육</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1일차 · R 기초와 데이터프레임</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-01-r-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1교시 · R 기초</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-02-dataframe-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2교시 · 데이터프레임 다루기 I</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-03-dataframe-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3·4교시 · 데이터프레임 다루기 II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-04-dataframe-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5·6교시 · 데이터프레임 다루기 III</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2일차 · 데이터 시각화와 회귀분석</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-00-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2일차 강의 안내</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-01-descriptive-statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제1장 자료의 특성과 기술통계</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-02-ggplot2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제2장 ggplot2를 활용한 데이터 시각화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-03-linear-regression.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">제3장 선형회귀분석</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-04-sports100-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제4장 국민체력 100 자료를 이용한 종합 실습</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#reg-data" id="toc-reg-data" class="nav-link active" data-scroll-target="#reg-data"><span class="header-section-number">3.1</span> 변수 간 관계와 분석 자료</a>
+  <ul class="collapse">
+  <li><a href="#설명변수와-반응변수" id="toc-설명변수와-반응변수" class="nav-link" data-scroll-target="#설명변수와-반응변수"><span class="header-section-number">3.1.1</span> 설명변수와 반응변수</a></li>
+  <li><a href="#실습-자료-불러오기" id="toc-실습-자료-불러오기" class="nav-link" data-scroll-target="#실습-자료-불러오기"><span class="header-section-number">3.1.2</span> 실습 자료 불러오기</a></li>
+  <li><a href="#산점도와-상관계수" id="toc-산점도와-상관계수" class="nav-link" data-scroll-target="#산점도와-상관계수"><span class="header-section-number">3.1.3</span> 산점도와 상관계수</a></li>
+  </ul></li>
+  <li><a href="#reg-model" id="toc-reg-model" class="nav-link" data-scroll-target="#reg-model"><span class="header-section-number">3.2</span> 단순선형회귀모형과 최소제곱법</a>
+  <ul class="collapse">
+  <li><a href="#개별-관측값과-조건부-평균" id="toc-개별-관측값과-조건부-평균" class="nav-link" data-scroll-target="#개별-관측값과-조건부-평균"><span class="header-section-number">3.2.1</span> 개별 관측값과 조건부 평균</a></li>
+  <li><a href="#잔차와-최소제곱법" id="toc-잔차와-최소제곱법" class="nav-link" data-scroll-target="#잔차와-최소제곱법"><span class="header-section-number">3.2.2</span> 잔차와 최소제곱법</a></li>
+  <li><a href="#회귀계수-직접-계산하기" id="toc-회귀계수-직접-계산하기" class="nav-link" data-scroll-target="#회귀계수-직접-계산하기"><span class="header-section-number">3.2.3</span> 회귀계수 직접 계산하기</a></li>
+  </ul></li>
+  <li><a href="#reg-fit" id="toc-reg-fit" class="nav-link" data-scroll-target="#reg-fit"><span class="header-section-number">3.3</span> R을 이용한 모형 적합과 결과 해석</a>
+  <ul class="collapse">
+  <li><a href="#lm으로-회귀식-적합하기" id="toc-lm으로-회귀식-적합하기" class="nav-link" data-scroll-target="#lm으로-회귀식-적합하기"><span class="header-section-number">3.3.1</span> lm()으로 회귀식 적합하기</a></li>
+  <li><a href="#summary-출력-읽기" id="toc-summary-출력-읽기" class="nav-link" data-scroll-target="#summary-출력-읽기"><span class="header-section-number">3.3.2</span> summary() 출력 읽기</a></li>
+  <li><a href="#적합값과-잔차-확인하기" id="toc-적합값과-잔차-확인하기" class="nav-link" data-scroll-target="#적합값과-잔차-확인하기"><span class="header-section-number">3.3.3</span> 적합값과 잔차 확인하기</a></li>
+  </ul></li>
+  <li><a href="#reg-evaluation" id="toc-reg-evaluation" class="nav-link" data-scroll-target="#reg-evaluation"><span class="header-section-number">3.4</span> 모형 평가와 잔차 진단</a>
+  <ul class="collapse">
+  <li><a href="#mse-rmse와-결정계수" id="toc-mse-rmse와-결정계수" class="nav-link" data-scroll-target="#mse-rmse와-결정계수"><span class="header-section-number">3.4.1</span> MSE, RMSE와 결정계수</a></li>
+  <li><a href="#잔차-그래프와-모형의-가정" id="toc-잔차-그래프와-모형의-가정" class="nav-link" data-scroll-target="#잔차-그래프와-모형의-가정"><span class="header-section-number">3.4.2</span> 잔차 그래프와 모형의 가정</a></li>
+  <li><a href="#새로운-자료에서의-예측-오차" id="toc-새로운-자료에서의-예측-오차" class="nav-link" data-scroll-target="#새로운-자료에서의-예측-오차"><span class="header-section-number">3.4.3</span> 새로운 자료에서의 예측 오차</a></li>
+  </ul></li>
+  <li><a href="#reg-prediction" id="toc-reg-prediction" class="nav-link" data-scroll-target="#reg-prediction"><span class="header-section-number">3.5</span> 예측값과 예측구간</a>
+  <ul class="collapse">
+  <li><a href="#새로운-설명변수-값으로-예측하기" id="toc-새로운-설명변수-값으로-예측하기" class="nav-link" data-scroll-target="#새로운-설명변수-값으로-예측하기"><span class="header-section-number">3.5.1</span> 새로운 설명변수 값으로 예측하기</a></li>
+  <li><a href="#평균의-신뢰구간과-개인의-예측구간" id="toc-평균의-신뢰구간과-개인의-예측구간" class="nav-link" data-scroll-target="#평균의-신뢰구간과-개인의-예측구간"><span class="header-section-number">3.5.2</span> 평균의 신뢰구간과 개인의 예측구간</a></li>
+  <li><a href="#외삽과-적용-범위" id="toc-외삽과-적용-범위" class="nav-link" data-scroll-target="#외삽과-적용-범위"><span class="header-section-number">3.5.3</span> 외삽과 적용 범위</a></li>
+  </ul></li>
+  <li><a href="#reg-practice" id="toc-reg-practice" class="nav-link" data-scroll-target="#reg-practice"><span class="header-section-number">3.6</span> 스포츠 자료 적용과 연습문제</a>
+  <ul class="collapse">
+  <li><a href="#악력과-점프-높이의-관계" id="toc-악력과-점프-높이의-관계" class="nav-link" data-scroll-target="#악력과-점프-높이의-관계"><span class="header-section-number">3.6.1</span> 악력과 점프 높이의 관계</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./d2-00-intro.html">2일차 · 데이터 시각화와 회귀분석</a></li><li class="breadcrumb-item"><a href="./d2-03-linear-regression.html">제3장 선형회귀분석</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">제3장 선형회귀분석</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>앞 장에서는 산점도를 이용하여 두 변수 사이의 관계를 시각적으로 살펴보았습니다. 이 장에서는 그 관계를 수치로 요약하고, 설명변수의 값으로부터 반응변수의 평균과 새로운 관측값을 예측하는 <strong>선형회귀분석</strong>을 다룹니다. 설명변수가 하나인 단순선형회귀모형을 중심으로 분석 절차를 익힙니다.</p>
+<p>아버지와 아들의 키 자료를 이용하여 상관계수, 최소제곱법, 회귀계수와 결정계수의 의미를 설명합니다. 이어서 R의 <code>lm()</code>으로 모형을 적합하고, 잔차를 점검한 뒤 <code>predict()</code>로 예측값과 구간을 계산합니다. 마지막에는 같은 절차를 스포츠 측정 자료에 적용합니다.</p>
+<section id="reg-data" class="level2">
+<h2 class="anchored" data-anchor-id="reg-data"><span class="header-section-number">3.1</span> 변수 간 관계와 분석 자료</h2>
+<section id="설명변수와-반응변수" class="level3">
+<h3 class="anchored" data-anchor-id="설명변수와-반응변수"><span class="header-section-number">3.1.1</span> 설명변수와 반응변수</h3>
+<p>회귀분석에서는 분석 목적에 따라 변수의 역할을 구분합니다. <strong>반응변수(response variable)</strong>는 설명하거나 예측하려는 변수이며, <strong>설명변수(explanatory variable)</strong>는 그 예측에 이용하는 변수입니다. 일반적으로 설명변수를 <span class="math inline">\(x\)</span>, 반응변수를 <span class="math inline">\(y\)</span>로 표시합니다.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">분석 목적</th>
+<th style="text-align: left;">설명변수 <span class="math inline">\(x\)</span></th>
+<th style="text-align: left;">반응변수 <span class="math inline">\(y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">아버지의 키로 아들의 키 예측</td>
+<td style="text-align: left;">아버지의 키</td>
+<td style="text-align: left;">아들의 키</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">악력으로 점프 높이 예측</td>
+<td style="text-align: left;">악력</td>
+<td style="text-align: left;">점프 높이</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">주간 훈련시간으로 경기기록 예측</td>
+<td style="text-align: left;">주간 훈련시간</td>
+<td style="text-align: left;">경기기록</td>
+</tr>
+</tbody>
+</table>
+<p>변수의 역할은 자료의 열 순서가 아니라 분석 목적에 따라 정합니다. 예를 들어 악력과 점프 높이를 함께 측정했다고 해서 악력이 점프 높이의 원인이라고 결론 내릴 수는 없습니다. 체격, 성별, 연령, 훈련 수준 등 다른 요인도 관계에 관여할 수 있습니다.</p>
+</section>
+<section id="실습-자료-불러오기" class="level3">
+<h3 class="anchored" data-anchor-id="실습-자료-불러오기"><span class="header-section-number">3.1.2</span> 실습 자료 불러오기</h3>
+<p>실습에는 첨부 교재에서 사용한 아버지·아들 키 자료를 사용합니다. 한 행은 한 쌍의 키를 나타내며, <code>fheight</code>는 아버지의 키, <code>sheight</code>는 아들의 키입니다. CSV 원본의 단위는 <strong>inch</strong>입니다.</p>
+<p>인터넷에 공개된 CSV의 URL을 <code>read.csv()</code>에 전달하여 자료를 바로 불러옵니다. 인터넷에 연결된 상태에서 다음 코드를 실행합니다. CSV를 미리 내려받거나 자료를 읽기 위한 작업 폴더를 지정할 필요는 없습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>url1 <span class="ot">&lt;-</span> <span class="st">"https://uos-bigdata.github.io/bigdata-exercise/_downloads/4480b104e6e159a32c7d5a0b03cf4684/father-and-son.csv"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>father_son <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(url1)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(father_son)             <span class="co"># 행 수와 열 수</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1078    2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(father_son)             <span class="co"># 변수 이름과 자료형</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   1078 obs. of  2 variables:
+ $ fheight: num  65 63.3 65 65.8 61.1 ...
+ $ sheight: num  59.8 63.2 63.3 62.8 64.3 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(father_son))  <span class="co"># 변수별 결측값 수</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>fheight sheight 
+      0       0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(father_son)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   fheight  sheight
+1 65.04851 59.77827
+2 63.25094 63.21404
+3 64.95532 63.34242
+4 65.75250 62.79238
+5 61.13723 64.28113
+6 63.02254 64.24221</code></pre>
+</div>
+</div>
+<p>자료는 <strong>1,078행, 2열</strong>로 구성되어 있으며 두 변수에 결측값이 없습니다. 파일을 읽은 직후 자료형, 결측값, 단위를 먼저 확인해야 분석에 사용한 관측값을 명확히 할 수 있습니다. 다른 자료에 결측값이 있으면 삭제 여부와 그 이유를 검토하고, 분석에 사용한 표본 수를 함께 기록합니다.</p>
+<p>이후의 분석에서는 익숙한 단위인 cm를 사용합니다. 다음 변환은 파일을 읽은 다음 한 번 실행합니다. 변환 코드만 반복하면 이미 변환한 값에 다시 2.54가 곱해지므로, 재실행할 때에는 위의 자료 읽기 코드부터 실행합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>father_son<span class="sc">$</span>fheight <span class="ot">&lt;-</span> father_son<span class="sc">$</span>fheight <span class="sc">*</span> <span class="fl">2.54</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>father_son<span class="sc">$</span>sheight <span class="ot">&lt;-</span> father_son<span class="sc">$</span>sheight <span class="sc">*</span> <span class="fl">2.54</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(father_son)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    fheight         sheight     
+ Min.   :149.9   Min.   :148.6  
+ 1st Qu.:167.1   1st Qu.:170.0  
+ Median :172.1   Median :174.3  
+ Mean   :171.9   Mean   :174.5  
+ 3rd Qu.:176.8   3rd Qu.:179.0  
+ Max.   :191.6   Max.   :199.0  </code></pre>
+</div>
+</div>
+<p><code>$</code>는 데이터프레임에서 특정 열을 선택하는 기호입니다. <code>father_son$fheight</code>는 <code>father_son</code>의 아버지 키 열을 의미합니다.</p>
+</section>
+<section id="산점도와-상관계수" class="level3">
+<h3 class="anchored" data-anchor-id="산점도와-상관계수"><span class="header-section-number">3.1.3</span> 산점도와 상관계수</h3>
+<p>먼저 산점도를 그려 관계의 방향, 직선에 가까운 정도, 값이 크게 벗어난 관측값을 확인합니다. 점이 겹치는 부분은 <code>alpha</code>로 투명도를 조정합니다. 점선은 각 변수의 평균입니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(father_son, <span class="fu">aes</span>(<span class="at">x =</span> fheight, <span class="at">y =</span> sheight)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"steelblue4"</span>) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">mean</span>(father_son<span class="sc">$</span>fheight), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">mean</span>(father_son<span class="sc">$</span>sheight), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"아버지의 키 (cm)"</span>, <span class="at">y =</span> <span class="st">"아들의 키 (cm)"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-scatter-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.1: 아버지와 아들의 키. 점선은 두 변수 각각의 평균입니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>아버지의 키가 큰 쪽에서 아들의 키도 큰 경향이 나타납니다. 그러나 같은 아버지 키에 대해서도 아들의 키는 넓게 분포합니다. 관계가 있다는 것은 개별 관측값을 오차 없이 예측할 수 있다는 뜻은 아닙니다.</p>
+<p><strong>피어슨 상관계수(Pearson correlation coefficient)</strong>는 두 수치형 변수 사이의 <strong>선형 관계의 방향과 강도</strong>를 나타냅니다. 값은 <span class="math inline">\(-1\)</span>과 <span class="math inline">\(1\)</span> 사이에 있으며, 부호는 관계의 방향을, 절댓값은 직선에 가까운 정도를 나타냅니다.</p>
+<p><span class="math display">\[
+r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+{\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2\sum_{i=1}^{n}(y_i-\bar{y})^2}}
+\]</span></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>r_height <span class="ot">&lt;-</span> <span class="fu">cor</span>(father_son<span class="sc">$</span>fheight, father_son<span class="sc">$</span>sheight)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>r_height</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5013383</code></pre>
+</div>
+</div>
+<p>상관계수는 약 <strong>0.501</strong>으로 양의 선형 관계를 나타냅니다. 상관계수는 단위가 없는 수치이며, 두 키를 inch에서 cm로 변환해도 바뀌지 않습니다. 반면 회귀식의 기울기는 변수의 단위와 표준편차에 따라 달라집니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="보충: 표준화한 값으로 상관계수 계산하기">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+보충: 표준화한 값으로 상관계수 계산하기
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>1장에서 배운 평균과 표준편차를 이용하면 각 값을 표준화할 수 있습니다. R의 <code>scale()</code>은 기본적으로 평균을 빼고 표본표준편차로 나눕니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>zx <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(father_son<span class="sc">$</span>fheight))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>zy <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(father_son<span class="sc">$</span>sheight))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(father_son)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(zx <span class="sc">*</span> zy) <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5013383</code></pre>
+</div>
+</div>
+<p>표본표준편차의 분모가 <span class="math inline">\(n-1\)</span>이므로 위의 계산에서도 <span class="math inline">\(n-1\)</span>로 나눕니다. 결과는 <code>cor()</code>와 같습니다.</p>
+</div>
+</div>
+</div>
+<p>상관계수가 0에 가깝더라도 비선형 관계는 존재할 수 있습니다. 다음 자료에서는 <span class="math inline">\(y=x^2\)</span>라는 명확한 관계가 있지만 상관계수는 0에 가깝습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>curve_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="at">length.out =</span> <span class="dv">61</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>curve_data<span class="sc">$</span>y <span class="ot">&lt;-</span> curve_data<span class="sc">$</span>x<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(curve_data<span class="sc">$</span>x, curve_data<span class="sc">$</span>y), <span class="dv">10</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(curve_data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"steelblue4"</span>) <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"x"</span>, <span class="at">y =</span> <span class="st">"y = x²"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-nonlinear-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.2: 상관계수가 0에 가까워도 곡선 형태의 관계가 존재할 수 있습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>또한 <strong>상관관계만으로 인과관계를 판단하지 않습니다.</strong> 예를 들어 기온은 아이스크림과 에어컨 판매량 모두에 영향을 줄 수 있습니다. 이런 제3의 변수는 인과관계를 해석할 때 <strong>교란변수(confounding variable)</strong>가 될 수 있습니다. 회귀계수를 계산해도 자료의 수집 방식과 다른 요인을 검토해야 한다는 점은 같습니다.</p>
+</section>
+</section>
+<section id="reg-model" class="level2">
+<h2 class="anchored" data-anchor-id="reg-model"><span class="header-section-number">3.2</span> 단순선형회귀모형과 최소제곱법</h2>
+<section id="개별-관측값과-조건부-평균" class="level3">
+<h3 class="anchored" data-anchor-id="개별-관측값과-조건부-평균"><span class="header-section-number">3.2.1</span> 개별 관측값과 조건부 평균</h3>
+<p>단순선형회귀모형은 설명변수 <span class="math inline">\(x\)</span>가 주어졌을 때 반응변수 <span class="math inline">\(Y\)</span>의 <strong>조건부 평균</strong>을 직선으로 나타냅니다.</p>
+<p><span class="math display">\[
+E(Y\mid x)=\beta_0+\beta_1x
+\]</span></p>
+<p><span class="math inline">\(E(Y\mid x)\)</span>는 설명변수가 특정 값 <span class="math inline">\(x\)</span>일 때의 반응변수 평균을 뜻합니다. <span class="math inline">\(\beta_0\)</span>는 절편, <span class="math inline">\(\beta_1\)</span>은 기울기입니다. 실제 관측값은 평균 주위에 흩어져 있으므로 다음과 같이 오차항을 포함하여 표현합니다.</p>
+<p><span class="math display">\[
+Y_i=\beta_0+\beta_1x_i+\varepsilon_i,\qquad E(\varepsilon_i\mid x_i)=0
+\]</span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">기호</th>
+<th style="text-align: left;">의미</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(x=0\)</span>일 때 반응변수의 평균을 나타내는 절편</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(x\)</span>가 1단위 다를 때 반응변수 평균의 차이를 나타내는 기울기</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\varepsilon_i\)</span></td>
+<td style="text-align: left;">실제 관측값이 모형의 평균에서 벗어나는 정도인 오차항</td>
+</tr>
+</tbody>
+</table>
+<p>아버지의 키를 구간으로 나누어 각 구간의 평균을 구하면 조건부 평균의 의미를 살펴볼 수 있습니다. 아래에서는 각 구간의 아버지 평균 키와 아들 평균 키를 함께 계산합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>father_son<span class="sc">$</span>height_band <span class="ot">&lt;-</span> <span class="fu">cut</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  father_son<span class="sc">$</span>fheight,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">140</span>, <span class="dv">160</span>, <span class="dv">170</span>, <span class="dv">180</span>, <span class="dv">200</span>), <span class="at">include.lowest =</span> <span class="cn">TRUE</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>band_means <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(fheight, sheight) <span class="sc">~</span> height_band,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> father_son, <span class="at">FUN =</span> mean</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>band_counts <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(sheight <span class="sc">~</span> height_band, <span class="at">data =</span> father_son, <span class="at">FUN =</span> length)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>band_means<span class="sc">$</span>n <span class="ot">&lt;-</span> band_counts<span class="sc">$</span>sheight[<span class="fu">match</span>(band_means<span class="sc">$</span>height_band,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                                         band_counts<span class="sc">$</span>height_band)]</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>band_means</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  height_band  fheight  sheight   n
+1   [140,160] 157.0334 167.0005  48
+2   (160,170] 165.9806 171.1997 372
+3   (170,180] 174.5800 175.9168 521
+4   (180,200] 183.1884 180.3671 137</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(father_son, <span class="fu">aes</span>(<span class="at">x =</span> fheight, <span class="at">y =</span> sheight)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> band_means, <span class="fu">aes</span>(<span class="at">size =</span> n), <span class="at">color =</span> <span class="st">"firebrick"</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"아버지의 키 (cm)"</span>, <span class="at">y =</span> <span class="st">"아들의 키 (cm)"</span>, <span class="at">size =</span> <span class="st">"구간별 관측 수"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-bin-means-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.3: 전체 관측값과 아버지 키 구간별 평균. 붉은 점의 크기는 구간별 관측 수를 나타냅니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>붉은 점은 키 구간별 평균이며, 특정한 한 아들의 키를 나타내지 않습니다. 구간별 평균은 구간의 경계와 관측 수에 따라 달라집니다. 이후 회귀식은 이 네 개의 평균점이 아니라 <strong>전체 1,078개 관측값</strong>을 사용하여 적합합니다.</p>
+</section>
+<section id="잔차와-최소제곱법" class="level3">
+<h3 class="anchored" data-anchor-id="잔차와-최소제곱법"><span class="header-section-number">3.2.2</span> 잔차와 최소제곱법</h3>
+<p>자료로부터 추정한 회귀식을 <span class="math inline">\(\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_i\)</span>로 나타냅니다. 기호 위의 모자는 자료를 이용하여 구한 추정값임을 뜻합니다. 관측값 <span class="math inline">\(y_i\)</span>와 적합값 <span class="math inline">\(\hat{y}_i\)</span>의 차이를 <strong>잔차(residual)</strong>라고 합니다.</p>
+<p><span class="math display">\[
+e_i=y_i-\hat{y}_i
+\]</span></p>
+<p>오차항 <span class="math inline">\(\varepsilon_i\)</span>는 알 수 없는 모평균으로부터의 차이이고, 잔차 <span class="math inline">\(e_i\)</span>는 자료에서 추정한 회귀직선으로부터의 차이입니다. 잔차가 양수이면 관측값이 직선 위쪽에, 음수이면 아래쪽에 있습니다.</p>
+<p><strong>최소제곱법(ordinary least squares)</strong>은 잔차제곱합이 가장 작아지는 절편과 기울기를 찾는 방법입니다. 여기서 거리는 각 관측점에서 직선까지의 <strong>수직 방향, 즉 반응변수 방향의 차이</strong>입니다.</p>
+<p><span class="math display">\[
+\mathrm{SSE}=\sum_{i=1}^{n}e_i^2
+=\sum_{i=1}^{n}\{y_i-(\hat{\beta}_0+\hat{\beta}_1x_i)\}^2
+\]</span></p>
+<p>관측 수가 같은 자료에서는 <span class="math inline">\(\mathrm{MSE}=\mathrm{SSE}/n\)</span>을 최소화해도 같은 회귀식을 얻습니다. 차이를 제곱하면 양수와 음수가 상쇄되지 않으며, 큰 차이에 더 큰 가중치가 부여됩니다.</p>
+</section>
+<section id="회귀계수-직접-계산하기" class="level3">
+<h3 class="anchored" data-anchor-id="회귀계수-직접-계산하기"><span class="header-section-number">3.2.3</span> 회귀계수 직접 계산하기</h3>
+<p>절편을 포함하는 단순선형회귀에서 설명변수의 분산이 0이 아니면 최소제곱 추정값은 다음과 같습니다.</p>
+<p><span class="math display">\[
+\hat{\beta}_1=
+\frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+{\sum_{i=1}^{n}(x_i-\bar{x})^2}
+=r\frac{s_y}{s_x},
+\qquad
+\hat{\beta}_0=\bar{y}-\hat{\beta}_1\bar{x}
+\]</span></p>
+<p><span class="math inline">\(s_x\)</span>와 <span class="math inline">\(s_y\)</span>는 각각 설명변수와 반응변수의 표본표준편차입니다. 다음 코드는 이 식을 그대로 계산합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> father_son<span class="sc">$</span>fheight</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> father_son<span class="sc">$</span>sheight</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">sum</span>((x <span class="sc">-</span> <span class="fu">mean</span>(x)) <span class="sc">*</span> (y <span class="sc">-</span> <span class="fu">mean</span>(y))) <span class="sc">/</span> <span class="fu">sum</span>((x <span class="sc">-</span> <span class="fu">mean</span>(x))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>b0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(y) <span class="sc">-</span> b1 <span class="sc">*</span> <span class="fu">mean</span>(x)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">intercept =</span> b0, <span class="at">slope =</span> b1)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>intercept     slope 
+86.071975  0.514093 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x, y) <span class="sc">*</span> <span class="fu">sd</span>(y) <span class="sc">/</span> <span class="fu">sd</span>(x)  <span class="co"># 같은 기울기를 구하는 다른 식</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.514093</code></pre>
+</div>
+</div>
+<p>기울기는 약 0.514, 절편은 약 86.072입니다. 기울기와 상관계수는 부호가 같지만 일반적으로 값이 같지는 않습니다. 두 변수의 표준편차가 같으면 기울기와 상관계수가 일치합니다.</p>
+<p>서로 다른 두 후보 직선과 최소제곱 직선의 MSE를 비교합니다. <code>mean()</code> 안에서 각 관측값과 직선의 차이를 제곱하여 평균을 구합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> <span class="fu">c</span>(<span class="st">"20 + 0.8x"</span>, <span class="st">"25 + 0.9x"</span>, <span class="st">"최소제곱 직선"</span>),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">MSE =</span> <span class="fu">c</span>(</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>((y <span class="sc">-</span> (<span class="dv">20</span> <span class="sc">+</span> <span class="fl">0.8</span> <span class="sc">*</span> x))<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>((y <span class="sc">-</span> (<span class="dv">25</span> <span class="sc">+</span> <span class="fl">0.9</span> <span class="sc">*</span> x))<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>((y <span class="sc">-</span> (b0 <span class="sc">+</span> b1 <span class="sc">*</span> x))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           line       MSE
+1     20 + 0.8x 328.39745
+2     25 + 0.9x  73.29044
+3 최소제곱 직선  38.23082</code></pre>
+</div>
+</div>
+<p>최소제곱 직선의 MSE는 약 38.23 cm²입니다. 위에서 계산한 최소제곱 해는 이 자료에 가능한 모든 절편과 기울기 중에서 MSE를 가장 작게 만듭니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="보충: 최소제곱 공식의 유도">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+보충: 최소제곱 공식의 유도
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(S(b_0,b_1)=\sum_i(y_i-b_0-b_1x_i)^2\)</span>를 각각의 계수로 미분하여 0으로 놓습니다.</p>
+<p><span class="math display">\[
+\frac{\partial S}{\partial b_0}=-2\sum_i(y_i-b_0-b_1x_i)=0,
+\qquad
+\frac{\partial S}{\partial b_1}=-2\sum_ix_i(y_i-b_0-b_1x_i)=0
+\]</span></p>
+<p>첫 번째 식에서 <span class="math inline">\(b_0=\bar{y}-b_1\bar{x}\)</span>를 얻습니다. 이를 두 번째 식에 대입하고 정리하면 <span class="math inline">\(b_1=\sum_i(x_i-\bar{x})(y_i-\bar{y})/\sum_i(x_i-\bar{x})^2\)</span>가 됩니다. 설명변수에 변동이 있으면 이 해는 유일한 최소값을 줍니다.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="reg-fit" class="level2">
+<h2 class="anchored" data-anchor-id="reg-fit"><span class="header-section-number">3.3</span> R을 이용한 모형 적합과 결과 해석</h2>
+<section id="lm으로-회귀식-적합하기" class="level3">
+<h3 class="anchored" data-anchor-id="lm으로-회귀식-적합하기"><span class="header-section-number">3.3.1</span> lm()으로 회귀식 적합하기</h3>
+<p>R에서는 기본 제공 함수인 <strong><code>lm()</code></strong>으로 선형회귀모형을 적합합니다. <code>lm()</code>을 사용하기 위해 별도 패키지를 설치할 필요는 없습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fit_height <span class="ot">&lt;-</span> <span class="fu">lm</span>(sheight <span class="sc">~</span> fheight, <span class="at">data =</span> father_son)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit_height)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)     fheight 
+  86.071975    0.514093 </code></pre>
+</div>
+</div>
+<p><code>sheight ~ fheight</code>에서 <code>~</code>의 왼쪽은 반응변수, 오른쪽은 설명변수입니다. <code>data = father_son</code>은 변수들이 들어 있는 데이터프레임을 지정합니다. 절편은 기본으로 포함되며, <code>fit_height</code>에 적합한 모형이 저장됩니다. <code>coef()</code>는 추정한 회귀계수를 꺼내는 함수입니다.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">출력 이름</th>
+<th style="text-align: left;">의미</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>(Intercept)</code></td>
+<td style="text-align: left;">절편 <span class="math inline">\(\hat{\beta}_0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fheight</code></td>
+<td style="text-align: left;">아버지 키에 대한 기울기 <span class="math inline">\(\hat{\beta}_1\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>추정한 회귀식은 다음과 같습니다. 두 키의 단위는 모두 cm입니다.</p>
+<p><span class="math display">\[
+\widehat{\text{아들의 키}}
+=86.07198+0.51409\times\text{아버지의 키}
+\]</span></p>
+<p>이 자료에서 아버지의 키가 1 cm 큰 경우, 모형이 추정한 아들의 <strong>평균 키는 약 0.514 cm 큽니다.</strong> 특정 아들의 키가 반드시 0.514 cm 커진다는 의미는 아닙니다. 절편 86.072는 식에서 <span class="math inline">\(x=0\)</span>일 때의 값이지만, 아버지 키 0 cm는 관측 범위와 해석 가능한 대상에서 벗어나므로 실질적인 의미를 부여하지 않습니다.</p>
+<p>계산에는 반올림한 회귀식 대신 <code>coef()</code> 또는 <code>predict()</code>의 값을 사용합니다. 기울기의 반올림 오차도 큰 <span class="math inline">\(x\)</span>에 곱해지면 예측값의 차이로 나타날 수 있습니다.</p>
+</section>
+<section id="summary-출력-읽기" class="level3">
+<h3 class="anchored" data-anchor-id="summary-출력-읽기"><span class="header-section-number">3.3.2</span> summary() 출력 읽기</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_height)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sheight ~ fheight, data = father_son)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-22.5480  -3.8466  -0.0201   4.1364  22.7799 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 86.07198    4.65418   18.49   &lt;2e-16 ***
+fheight      0.51409    0.02705   19.01   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.189 on 1076 degrees of freedom
+Multiple R-squared:  0.2513,    Adjusted R-squared:  0.2506 
+F-statistic: 361.2 on 1 and 1076 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>처음에는 출력 전체를 외우기보다 다음 항목을 순서대로 확인합니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">항목</th>
+<th style="text-align: left;">확인할 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>Call</code></td>
+<td style="text-align: left;">어떤 반응변수와 설명변수로 모형을 적합했는지</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Residuals</code></td>
+<td style="text-align: left;">잔차의 최솟값, 분위수, 최댓값</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Estimate</code></td>
+<td style="text-align: left;">회귀계수의 추정값과 부호</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Std. Error</code></td>
+<td style="text-align: left;">회귀계수 추정값의 표준오차</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>t value</code></td>
+<td style="text-align: left;">추정값을 표준오차로 나눈 검정통계량</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Pr(&gt;|t|)</code></td>
+<td style="text-align: left;">해당 계수가 0이라는 귀무가설에 대한 양측 검정의 p값</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Residual standard error</code></td>
+<td style="text-align: left;">잔차로 추정한 오차의 표준편차. 이 예제에서는 cm 단위</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Multiple R-squared</code></td>
+<td style="text-align: left;">관측된 반응변수의 변동을 모형이 설명하는 비율</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Adjusted R-squared</code></td>
+<td style="text-align: left;">설명변수 수와 표본 수를 반영하여 조정한 결정계수</td>
+</tr>
+</tbody>
+</table>
+<p><code>fheight</code> 행의 p값은 모형의 가정 아래에서 기울기가 0이라는 가설을 검정합니다. p값이 작다는 것은 해당 가설에 반하는 통계적 근거가 있다는 뜻이며, 관계가 크거나 인과관계가 있다는 뜻은 아닙니다. 표본 수가 크면 비교적 작은 관계도 통계적으로 유의할 수 있으므로 <strong>기울기의 크기, 구간, 결정계수</strong>를 함께 해석합니다. 출력 마지막의 F 검정은 절편만 있는 모형과의 비교이며, 설명변수가 하나인 이 경우 기울기의 t 검정과 같은 p값을 줍니다.</p>
+<p>회귀계수의 95% 신뢰구간은 <code>confint()</code>로 구합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(fit_height, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 2.5 %     97.5 %
+(Intercept) 76.9396799 95.2042702
+fheight      0.4610188  0.5671673</code></pre>
+</div>
+</div>
+<p><code>fheight</code> 행은 기울기의 신뢰구간입니다. 같은 조건에서 표본 추출과 구간 계산을 반복한다면 이렇게 계산한 구간의 약 95%가 참 기울기를 포함한다는 의미입니다. 이 해석은 자료의 수집 방식과 모형의 가정이 적절하다는 전제에 따릅니다.</p>
+</section>
+<section id="적합값과-잔차-확인하기" class="level3">
+<h3 class="anchored" data-anchor-id="적합값과-잔차-확인하기"><span class="header-section-number">3.3.3</span> 적합값과 잔차 확인하기</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>height_result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">father_cm =</span> father_son<span class="sc">$</span>fheight,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">observed_cm =</span> father_son<span class="sc">$</span>sheight,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fitted_cm =</span> <span class="fu">fitted</span>(fit_height),</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">residual_cm =</span> <span class="fu">resid</span>(fit_height)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(height_result)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  father_cm observed_cm fitted_cm residual_cm
+1  165.2232    151.8368  171.0121  -19.175274
+2  160.6574    160.5637  168.6648   -8.101158
+3  164.9865    160.8897  170.8904  -10.000646
+4  167.0113    159.4926  171.9313  -12.438702
+5  155.2886    163.2741  165.9047   -2.630675
+6  160.0773    163.1752  168.3666   -5.191362</code></pre>
+</div>
+</div>
+<p><code>fitted()</code>는 모형을 적합할 때 사용한 관측값의 적합값을, <code>resid()</code>는 관측값에서 적합값을 뺀 잔차를 반환합니다. 아래 그래프에서는 선분의 길이와 방향으로 처음 20개 관측값의 잔차를 표시합니다. 회귀직선은 전체 자료로 적합한 결과입니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(father_son, <span class="fu">aes</span>(<span class="at">x =</span> fheight, <span class="at">y =</span> sheight)) <span class="sc">+</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.12</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">head</span>(height_result, <span class="dv">20</span>),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> father_cm, <span class="at">xend =</span> father_cm,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> fitted_cm, <span class="at">yend =</span> observed_cm),</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"firebrick"</span>, <span class="at">linewidth =</span> <span class="fl">0.6</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">coef</span>(fit_height)[<span class="dv">1</span>],</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope =</span> <span class="fu">coef</span>(fit_height)[<span class="dv">2</span>], <span class="at">color =</span> <span class="st">"steelblue4"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"아버지의 키 (cm)"</span>, <span class="at">y =</span> <span class="st">"아들의 키 (cm)"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-residual-segments-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.4: 전체 자료로 적합한 회귀직선과 처음 20개 관측값의 잔차.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>앞 장의 <code>geom_smooth(method = "lm", se = FALSE)</code>도 같은 단순선형회귀직선을 그립니다. 여기서는 수치 계산과 그래프가 같은 모형에 근거하도록 <code>fit_height</code>에서 꺼낸 계수로 직선을 표시했습니다.</p>
+</section>
+</section>
+<section id="reg-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="reg-evaluation"><span class="header-section-number">3.4</span> 모형 평가와 잔차 진단</h2>
+<section id="mse-rmse와-결정계수" class="level3">
+<h3 class="anchored" data-anchor-id="mse-rmse와-결정계수"><span class="header-section-number">3.4.1</span> MSE, RMSE와 결정계수</h3>
+<p>모형의 적합 정도는 잔차의 크기와 반응변수의 전체 변동을 함께 고려하여 평가합니다. 이 장에서는 적합 자료의 평균제곱오차를 <span class="math inline">\(\mathrm{MSE}=\mathrm{SSE}/n\)</span>으로 정의하고, 그 제곱근을 RMSE라고 부릅니다.</p>
+<p><span class="math display">\[
+\mathrm{RMSE}=\sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2},
+\qquad
+R^2=1-\frac{\mathrm{SSE}}{\mathrm{SST}},
+\qquad
+\mathrm{SST}=\sum_{i=1}^{n}(y_i-\bar{y})^2
+\]</span></p>
+<p>SST는 모든 관측값을 하나의 평균 <span class="math inline">\(\bar{y}\)</span>로 예측할 때의 제곱오차합입니다. SSE는 회귀식으로 예측할 때의 제곱오차합입니다. 따라서 <strong>결정계수 <span class="math inline">\(R^2\)</span></strong>는 평균만 사용하는 것과 비교하여 회귀식이 관측된 변동을 얼마나 줄여 설명하는지 나타냅니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(father_son)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>SSE <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">resid</span>(fit_height)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>SST <span class="ot">&lt;-</span> <span class="fu">sum</span>((father_son<span class="sc">$</span>sheight <span class="sc">-</span> <span class="fu">mean</span>(father_son<span class="sc">$</span>sheight))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>MSE <span class="ot">&lt;-</span> SSE <span class="sc">/</span> n</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>RMSE <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(MSE)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>R2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> SSE <span class="sc">/</span> SST</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">MSE =</span> MSE, <span class="at">RMSE =</span> RMSE, <span class="at">R_squared =</span> R2)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       MSE       RMSE  R_squared 
+38.2308245  6.1831080  0.2513401 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_height)<span class="sc">$</span>r.squared</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2513401</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(father_son<span class="sc">$</span>fheight, father_son<span class="sc">$</span>sheight)<span class="sc">^</span><span class="dv">2</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2513401</code></pre>
+</div>
+</div>
+<p>이 자료에서 RMSE는 약 <strong>6.18 cm</strong>, 결정계수는 약 <strong>0.251</strong>입니다. 아들 키의 표본 내 변동 중 약 <strong>25.1%</strong>가 아버지 키를 이용한 회귀식으로 설명됩니다. 이를 예측 정확도가 25.1%라거나, 유전의 영향을 그 비율만큼 측정했다고 해석하지 않습니다.</p>
+<p>절편을 포함한 일반적인 최소제곱 회귀에서 적합 자료의 <span class="math inline">\(R^2\)</span>는 0과 1 사이입니다. 또한 <strong>절편을 포함하는 단순선형회귀</strong>에서 동일한 관측값으로 계산하면 <span class="math inline">\(R^2=r^2\)</span>입니다. 절편을 제외하거나 새로운 평가 자료에서 계산한 결정계수에는 이 성질이 그대로 적용되지 않습니다.</p>
+<p>MSE는 반응변수 단위의 제곱이고 RMSE는 반응변수와 같은 단위입니다. 모형을 비교할 때에는 같은 반응변수와 같은 평가 자료를 사용하는 것이 기본입니다. 서로 다른 모집단에서 얻은 <span class="math inline">\(R^2\)</span>의 크기만으로 어느 모형이 더 유용한지 판단하지 않습니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="계산상의 구분: MSE, 표본분산, 잔차표준오차">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+계산상의 구분: MSE, 표본분산, 잔차표준오차
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>R의 <code>var(y)</code>는 분모가 <span class="math inline">\(n-1\)</span>인 표본분산입니다. 따라서 위에서 정의한 <code>MSE</code>를 그대로 <code>var(y)</code>로 나눈 <code>1 - MSE / var(y)</code>는 정확한 결정계수가 아닙니다. <code>SSE / SST</code>를 사용하면 분모의 차이로 인한 혼동을 피할 수 있습니다.</p>
+<p>또한 <code>summary(lm())</code>의 잔차표준오차는 이 모형에서 두 계수를 추정한 것을 반영하여 <span class="math inline">\(\sqrt{\mathrm{SSE}/(n-2)}\)</span>로 계산합니다. RMSE의 분모 <span class="math inline">\(n\)</span>과 구분합니다. 회귀분석의 분산분석표에서는 <span class="math inline">\(\mathrm{SSE}/(n-2)\)</span>도 잔차평균제곱 또는 MSE라고 부르므로 문맥과 분모를 확인해야 합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">RMSE =</span> <span class="fu">sqrt</span>(SSE <span class="sc">/</span> n),</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">residual_standard_error =</span> <span class="fu">sqrt</span>(SSE <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">2</span>)),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">summary_sigma =</span> <span class="fu">summary</span>(fit_height)<span class="sc">$</span>sigma</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   RMSE residual_standard_error           summary_sigma 
+               6.183108                6.188852                6.188852 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="잔차-그래프와-모형의-가정" class="level3">
+<h3 class="anchored" data-anchor-id="잔차-그래프와-모형의-가정"><span class="header-section-number">3.4.2</span> 잔차 그래프와 모형의 가정</h3>
+<p>회귀식과 결정계수를 구한 뒤에는 직선 모형이 자료의 관계를 충분히 표현하는지 점검합니다. 통상적인 표준오차, 검정 및 구간 추론은 다음의 가정과 관련됩니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">가정 또는 조건</th>
+<th style="text-align: left;">의미와 점검 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">선형성 및 조건부 평균 0인 오차</td>
+<td style="text-align: left;">반응변수의 조건부 평균이 직선으로 표현되는지, 잔차에 체계적인 곡선이 남는지 확인합니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">오차의 독립성</td>
+<td style="text-align: left;">사람·가족·팀별 군집이나 반복 측정이 있는지 자료 수집 과정을 확인합니다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">등분산성</td>
+<td style="text-align: left;">설명변수의 값에 따라 오차의 분산이 크게 달라지지 않는지 확인합니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">오차의 정규성</td>
+<td style="text-align: left;">정규 Q-Q 그림으로 크게 벗어나는 양상을 확인합니다. 정규오차 가정은 통상적인 소표본 t 검정과 예측구간의 근거입니다.</td>
+</tr>
+</tbody>
+</table>
+<p>설명변수 자체가 정규분포를 따라야 하는 것은 아닙니다. 또한 잔차 그래프만으로 독립성이나 인과관계를 확인할 수는 없습니다. 이 CSV에는 가족 식별자나 상세한 표집 정보가 없으므로 관련 조건은 자료만으로 충분히 검증할 수 없습니다.</p>
+<p>먼저 적합값에 대한 잔차를 그립니다. 점들이 0을 중심으로 퍼지는지, 곡선이나 깔때기 형태가 나타나는지 확인합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(height_result, <span class="fu">aes</span>(<span class="at">x =</span> fitted_cm, <span class="at">y =</span> residual_cm)) <span class="sc">+</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"steelblue4"</span>) <span class="sc">+</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"firebrick"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"적합값 (cm)"</span>, <span class="at">y =</span> <span class="st">"잔차 (cm)"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-residual-plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.5: 적합값에 대한 잔차. 붉은 수평선은 잔차 0을 나타냅니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>잔차에 뚜렷한 곡선이 남으면 직선 외의 관계를 검토하고, 잔차의 퍼짐이 달라지면 통상적인 표준오차와 예측구간이 적절한지 검토합니다. 이런 양상이 없다는 것만으로 모든 가정이 충족되었다고 결론 내리지는 않습니다.</p>
+<p>정규 Q-Q 그림은 표준화 잔차와 정규분포의 이론적 분위수를 비교합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>residual_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">standardized =</span> <span class="fu">rstandard</span>(fit_height))</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(residual_data, <span class="fu">aes</span>(<span class="at">sample =</span> standardized)) <span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">color =</span> <span class="st">"steelblue4"</span>) <span class="sc">+</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>(<span class="at">color =</span> <span class="st">"firebrick"</span>) <span class="sc">+</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"정규분포의 이론적 분위수"</span>, <span class="at">y =</span> <span class="st">"표준화 잔차"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-qq-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.6: 표준화 잔차의 정규 Q-Q 그림. 특히 양쪽 꼬리의 이탈을 확인합니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>가운데 부분이 직선에 가깝더라도 양쪽 꼬리에서 벗어나는 관측값이 있는지 확인합니다. 큰 잔차가 나타나는 경우 입력 오류와 특수한 관측 조건을 먼저 살펴봅니다. 그래프를 직선에 맞추기 위해 관측값을 임의로 제외하지 않습니다.</p>
+</section>
+<section id="새로운-자료에서의-예측-오차" class="level3">
+<h3 class="anchored" data-anchor-id="새로운-자료에서의-예측-오차"><span class="header-section-number">3.4.3</span> 새로운 자료에서의 예측 오차</h3>
+<p>지금까지의 MSE는 모형을 만드는 데 사용한 자료에서 계산한 값입니다. 예측 성능을 평가할 때에는 모형 적합에 쓰지 않은 자료의 오차도 확인해야 합니다. 다음은 자료의 약 80%로 모형을 적합하고 나머지 약 20%로 평가하는 기본 예제입니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>train_id <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(father_son)),</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">size =</span> <span class="fu">floor</span>(<span class="fl">0.8</span> <span class="sc">*</span> <span class="fu">nrow</span>(father_son)))</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> father_son[train_id, ]</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> father_son[<span class="sc">-</span>train_id, ]</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>fit_train <span class="ot">&lt;-</span> <span class="fu">lm</span>(sheight <span class="sc">~</span> fheight, <span class="at">data =</span> train_data)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>test_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_train, <span class="at">newdata =</span> test_data)</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">train_RMSE =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(<span class="fu">resid</span>(fit_train)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">test_RMSE =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((test_data<span class="sc">$</span>sheight <span class="sc">-</span> test_pred)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>train_RMSE  test_RMSE 
+  6.219054   6.042185 </code></pre>
+</div>
+</div>
+<p><code>set.seed()</code>는 같은 무작위 분할을 재현하기 위한 설정입니다. 한 번의 분할 결과는 우연에 따라 달라질 수 있으며, 평가 RMSE가 항상 학습 RMSE보다 크지는 않습니다. 실제 자료에 같은 사람의 반복 측정이나 가족·팀별 군집이 있으면 그 단위가 양쪽에 섞이지 않도록 나눠야 합니다. 시간 순서가 중요한 예측에서는 과거로 학습하고 이후 시점으로 평가합니다. 여기서는 무작위 분할의 계산 절차를 익히는 데 목적을 둡니다.</p>
+</section>
+</section>
+<section id="reg-prediction" class="level2">
+<h2 class="anchored" data-anchor-id="reg-prediction"><span class="header-section-number">3.5</span> 예측값과 예측구간</h2>
+<section id="새로운-설명변수-값으로-예측하기" class="level3">
+<h3 class="anchored" data-anchor-id="새로운-설명변수-값으로-예측하기"><span class="header-section-number">3.5.1</span> 새로운 설명변수 값으로 예측하기</h3>
+<p>전체 자료로 적합한 <code>fit_height</code>를 이용하여 아버지의 키가 185 cm일 때 아들의 키를 예측합니다. <code>newdata</code>에는 <strong>모형의 설명변수와 이름이 같은 열</strong>을 가진 데이터프레임을 전달합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>new_father <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">fheight =</span> <span class="dv">185</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit_height, <span class="at">newdata =</span> new_father)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+181.1792 </code></pre>
+</div>
+</div>
+<p>예측값은 약 <strong>181.18 cm</strong>입니다. 이는 아버지 키가 185 cm일 때의 평균적인 아들 키에 대한 추정값이며, 새로운 한 사람을 예측할 때의 점예측값으로도 사용합니다. 개인별 차이를 표현하려면 구간이 필요합니다.</p>
+<p>여러 값을 한 번에 예측할 수도 있습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>new_fathers <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">fheight =</span> <span class="fu">c</span>(<span class="dv">165</span>, <span class="dv">175</span>, <span class="dv">185</span>))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(new_fathers, <span class="at">predicted_cm =</span> <span class="fu">predict</span>(fit_height, <span class="at">newdata =</span> new_fathers))</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  fheight predicted_cm
+1     165     170.8973
+2     175     176.0383
+3     185     181.1792</code></pre>
+</div>
+</div>
+</section>
+<section id="평균의-신뢰구간과-개인의-예측구간" class="level3">
+<h3 class="anchored" data-anchor-id="평균의-신뢰구간과-개인의-예측구간"><span class="header-section-number">3.5.2</span> 평균의 신뢰구간과 개인의 예측구간</h3>
+<p>같은 설명변수 값에서도 <strong>평균을 추정하는 문제</strong>와 <strong>새로운 관측값 하나를 예측하는 문제</strong>는 구분됩니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">구분</th>
+<th style="text-align: left;">대상</th>
+<th style="text-align: left;">R의 옵션</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">평균반응의 신뢰구간</td>
+<td style="text-align: left;">아버지 키가 185 cm인 집단의 아들 평균 키</td>
+<td style="text-align: left;"><code>interval = "confidence"</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">새로운 관측값의 예측구간</td>
+<td style="text-align: left;">아버지 키가 185 cm인 새로운 한 아들의 키</td>
+<td style="text-align: left;"><code>interval = "prediction"</code></td>
+</tr>
+</tbody>
+</table>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit_height, <span class="at">newdata =</span> new_father,</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">interval =</span> <span class="st">"confidence"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       fit      lwr      upr
+1 181.1792 180.3928 181.9655</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit_height, <span class="at">newdata =</span> new_father,</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       fit      lwr      upr
+1 181.1792 169.0102 193.3482</code></pre>
+</div>
+</div>
+<p>출력의 <code>fit</code>은 점예측값, <code>lwr</code>와 <code>upr</code>는 각각 구간의 하한과 상한입니다. 두 구간의 중심은 같지만 개인의 예측구간이 더 넓습니다. 예측구간은 평균 회귀식의 추정 불확실성과 새로운 관측값의 개별 변동을 모두 반영하기 때문입니다.</p>
+<p>95% 예측구간은 모형과 자료 생성 조건이 적절할 때, 같은 방식으로 새로운 관측값과 구간을 반복하여 얻으면 약 95%의 구간이 해당 새로운 관측값을 포함하도록 구성한 구간입니다. 모든 관측값이 반드시 들어가는 범위는 아닙니다.</p>
+<p>관측 범위 안의 여러 아버지 키에 대해 두 구간을 함께 그리면 차이가 분명해집니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>height_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">fheight =</span> <span class="fu">seq</span>(<span class="fu">min</span>(father_son<span class="sc">$</span>fheight), <span class="fu">max</span>(father_son<span class="sc">$</span>fheight), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>mean_ci <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_height, <span class="at">newdata =</span> height_grid, <span class="at">interval =</span> <span class="st">"confidence"</span>)</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>individual_pi <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_height, <span class="at">newdata =</span> height_grid, <span class="at">interval =</span> <span class="st">"prediction"</span>)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>height_grid<span class="sc">$</span>fit <span class="ot">&lt;-</span> mean_ci[, <span class="st">"fit"</span>]</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>height_grid<span class="sc">$</span>mean_lower <span class="ot">&lt;-</span> mean_ci[, <span class="st">"lwr"</span>]</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>height_grid<span class="sc">$</span>mean_upper <span class="ot">&lt;-</span> mean_ci[, <span class="st">"upr"</span>]</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>height_grid<span class="sc">$</span>individual_lower <span class="ot">&lt;-</span> individual_pi[, <span class="st">"lwr"</span>]</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>height_grid<span class="sc">$</span>individual_upper <span class="ot">&lt;-</span> individual_pi[, <span class="st">"upr"</span>]</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(height_grid, <span class="fu">aes</span>(<span class="at">x =</span> fheight)) <span class="sc">+</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> individual_lower, <span class="at">ymax =</span> individual_upper,</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fill =</span> <span class="st">"개인 예측구간"</span>), <span class="at">alpha =</span> <span class="fl">0.35</span>) <span class="sc">+</span></span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> father_son, <span class="fu">aes</span>(<span class="at">y =</span> sheight), <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_lower, <span class="at">ymax =</span> mean_upper,</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fill =</span> <span class="st">"평균 신뢰구간"</span>), <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> fit), <span class="at">color =</span> <span class="st">"steelblue4"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"개인 예측구간"</span> <span class="ot">=</span> <span class="st">"grey65"</span>,</span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"평균 신뢰구간"</span> <span class="ot">=</span> <span class="st">"skyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"아버지의 키 (cm)"</span>, <span class="at">y =</span> <span class="st">"아들의 키 (cm)"</span>, <span class="at">fill =</span> <span class="st">"95% 구간"</span>) <span class="sc">+</span></span>
+<span id="cb57-22"><a href="#cb57-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-interval-plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 3.7: 평균반응의 95% 신뢰구간과 새로운 개인의 95% 예측구간. 각 x값에서 계산한 구간입니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>앞 장의 <code>geom_smooth(method = "lm")</code>에서 기본으로 표시하는 음영은 <strong>평균반응에 대한 신뢰구간</strong>입니다. 개인의 예측구간으로 해석해서는 안 됩니다.</p>
+</section>
+<section id="외삽과-적용-범위" class="level3">
+<h3 class="anchored" data-anchor-id="외삽과-적용-범위"><span class="header-section-number">3.5.3</span> 외삽과 적용 범위</h3>
+<p>예측 전에 설명변수가 관측된 범위를 확인합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(father_son<span class="sc">$</span>fheight)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 149.8803 191.6022</code></pre>
+</div>
+</div>
+<p>관측 범위를 벗어난 설명변수에 대해 예측하는 것을 <strong>외삽(extrapolation)</strong>이라고 합니다. <code>predict()</code>는 그런 값에도 수치를 반환할 수 있지만, 관측 범위 밖에서도 같은 직선 관계가 유지된다는 근거는 별도로 필요합니다. 프로그램이 값을 계산했다는 사실만으로 예측의 타당성이 확보되지는 않습니다.</p>
+<p>또한 이 자료로 얻은 회귀식을 다른 시대, 지역, 연령 또는 측정 조건의 집단에 그대로 적용할 수 있는지는 별도의 문제입니다. 회귀식과 함께 분석 대상, 변수의 단위, 관측 범위, 예측의 불확실성을 기록합니다.</p>
+</section>
+</section>
+<section id="reg-practice" class="level2">
+<h2 class="anchored" data-anchor-id="reg-practice"><span class="header-section-number">3.6</span> 스포츠 자료 적용과 연습문제</h2>
+<section id="악력과-점프-높이의-관계" class="level3">
+<h3 class="anchored" data-anchor-id="악력과-점프-높이의-관계"><span class="header-section-number">3.6.1</span> 악력과 점프 높이의 관계</h3>
+<p>1장의 가상 스포츠 자료를 이용하여 분석 절차를 반복합니다. 이 장만 실행해도 실습할 수 있도록 필요한 변수를 다시 생성합니다. 다음 20명의 값은 <strong>교육용으로 만든 자료</strong>이므로 실제 선수의 예측식이나 평가 기준으로 사용하지 않습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>sports_reg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">grip_kg =</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">28</span>, <span class="dv">30</span>, <span class="dv">31</span>, <span class="dv">32</span>, <span class="dv">33</span>, <span class="dv">34</span>, <span class="dv">36</span>, <span class="dv">38</span>, <span class="dv">42</span>,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>              <span class="dv">27</span>, <span class="dv">31</span>, <span class="dv">33</span>, <span class="dv">35</span>, <span class="dv">36</span>, <span class="dv">38</span>, <span class="dv">40</span>, <span class="dv">42</span>, <span class="dv">46</span>, <span class="dv">58</span>),</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">jump_cm =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">28</span>, <span class="dv">30</span>, <span class="dv">29</span>, <span class="dv">31</span>, <span class="dv">32</span>, <span class="dv">34</span>, <span class="dv">33</span>, <span class="dv">36</span>, <span class="dv">38</span>,</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>              <span class="dv">26</span>, <span class="dv">30</span>, <span class="dv">31</span>, <span class="dv">33</span>, <span class="dv">35</span>, <span class="dv">36</span>, <span class="dv">38</span>, <span class="dv">40</span>, <span class="dv">43</span>, <span class="dv">46</span>)</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sports_reg, <span class="fu">aes</span>(<span class="at">x =</span> grip_kg, <span class="at">y =</span> jump_cm)) <span class="sc">+</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"steelblue4"</span>) <span class="sc">+</span></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"firebrick"</span>) <span class="sc">+</span></span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"악력 (kg)"</span>, <span class="at">y =</span> <span class="st">"점프 높이 (cm)"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-03-linear-regression_files/figure-html/reg-sports-data-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>fit_sports <span class="ot">&lt;-</span> <span class="fu">lm</span>(jump_cm <span class="sc">~</span> grip_kg, <span class="at">data =</span> sports_reg)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_sports)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = jump_cm ~ grip_kg, data = sports_reg)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.2418 -0.6139 -0.1060  0.7955  2.1215 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  8.81917    1.46365   6.025 1.07e-05 ***
+grip_kg      0.69694    0.04015  17.360 1.09e-12 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.327 on 18 degrees of freedom
+Multiple R-squared:  0.9436,    Adjusted R-squared:  0.9405 
+F-statistic: 301.4 on 1 and 18 DF,  p-value: 1.093e-12</code></pre>
+</div>
+</div>
+<p>악력이 1 kg 큰 경우 추정한 점프 높이의 평균은 약 0.7 cm 큽니다. 이 결과를 악력 훈련의 효과로 해석할 수는 없습니다. 특히 범위 끝에 있는 악력 58 kg 관측값은 회귀식에 미치는 영향이 클 수 있으므로 그 값을 확인하고, 실제 자료라면 수집 기록과 분석 목적을 함께 검토합니다.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<!-- 실습용 카운트다운 타이머
+     사용법: <div class="timer" data-min="5"></div>  → 클릭하면 시작/일시정지, 더블클릭하면 초기화 -->
+<script>
+(function () {
+  function fmt(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+  }
+  function setup(el) {
+    if (el.dataset.ready) return;
+    el.dataset.ready = "1";
+    var total = Math.round(parseFloat(el.dataset.min || "5") * 60);
+    var left = total, id = null;
+    el.innerHTML = '<span class="timer-time"></span><span class="timer-hint">클릭: 시작/정지 · 더블클릭: 초기화</span>';
+    var t = el.querySelector(".timer-time");
+    function draw() {
+      t.textContent = fmt(left);
+      el.classList.toggle("timer-warn", left <= 60 && left > 0);
+      el.classList.toggle("timer-done", left === 0);
+      el.classList.toggle("timer-running", id !== null);
+    }
+    el.addEventListener("click", function () {
+      if (id) { clearInterval(id); id = null; }
+      else if (left > 0) {
+        id = setInterval(function () {
+          left = Math.max(0, left - 1);
+          if (left === 0) { clearInterval(id); id = null; }
+          draw();
+        }, 1000);
+      }
+      draw();
+    });
+    el.addEventListener("dblclick", function () {
+      if (id) { clearInterval(id); id = null; }
+      left = total; draw();
+    });
+    draw();
+  }
+  function init() { document.querySelectorAll(".timer").forEach(setup); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<!-- 인쇄용: 탭 제목을 각 탭 내용 위에 표시할 수 있도록 data-tab-title 지정 -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".panel-tabset").forEach(function (ts) {
+    ts.querySelectorAll(".nav-tabs .nav-link").forEach(function (a) {
+      var id = (a.getAttribute("data-bs-target") || a.getAttribute("href") || "").replace("#", "");
+      var pane = id && document.getElementById(id);
+      if (pane) pane.setAttribute("data-tab-title", a.textContent.trim());
+    });
+  });
+});
+</script>
+
+<!-- PDF 링크는 새 창에서 열기 (RStudio Viewer에서는 외부 브라우저로 열림) -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('a[href$=".pdf"]').forEach(function (a) {
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener");
+  });
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./d2-02-ggplot2.html" class="pagination-link" aria-label="제2장 ggplot2를 활용한 데이터 시각화">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">제2장 ggplot2를 활용한 데이터 시각화</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./d2-04-sports100-practice.html" class="pagination-link" aria-label="제4장 국민체력 100 자료를 이용한 종합 실습">
+        <span class="nav-page-text">제4장 국민체력 100 자료를 이용한 종합 실습</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>재직자교육 · R 데이터 분석</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>made with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

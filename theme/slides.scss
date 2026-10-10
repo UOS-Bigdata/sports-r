@@ -1,0 +1,83 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+$font-family-monospace: "JetBrains Mono", "D2Coding", Menlo, Consolas, monospace;
+$presentation-font-size-root: 32px;
+$presentation-heading-font: $font-family-sans-serif;
+$presentation-heading-color: #1f3a5f;
+$presentation-heading-font-weight: 700;
+$presentation-heading-letter-spacing: -0.02em;
+$presentation-h1-font-size: 2.0em;
+$presentation-h2-font-size: 1.35em;
+$presentation-h3-font-size: 1.05em;
+$body-color: #1d232b;
+$link-color: #2a6fdb;
+$code-block-font-size: 0.6em;
+$code-block-bg: #f6f8fa;
+$presentation-line-height: 1.45;
+
+/*-- scss:rules --*/
+.reveal .slides section h2 {
+  padding-bottom: .25em; margin-bottom: .6em;
+  border-bottom: 3px solid #e3e8ef;
+}
+.reveal .slide-number, .reveal .footer { font-size: .45em; color: #8a94a3; }
+
+/* 섹션 구분 슬라이드: # 제목 {background-color="#1f3a5f"} */
+.reveal .slides section.section-slide h1,
+.reveal .slides section.section-slide h2 {
+  color: #fff; border-bottom: none; font-size: 1.9em;
+}
+.reveal .slides section.slide.level1 h1 { color: #fff; }
+.reveal .slides section.slide.level1 p { color: #c9d6e8; font-size: .85em; }
+.reveal .slides section.section-slide p { color: #c9d6e8; font-size: .9em; }
+.reveal .slides section.section-slide .kicker {
+  display: inline-block; padding: .1em .6em; border: 1px solid #c9d6e8; border-radius: 999px;
+  font-size: .55em; letter-spacing: .08em; color: #c9d6e8;
+}
+
+/* 코드/출력 */
+.reveal pre { box-shadow: none; border-radius: 6px; }
+.reveal div.sourceCode { border: 1px solid #e3e8ef; }
+.reveal div.cell-output pre code { background: #fff; }
+.reveal div.cell-output { border-left: 3px solid #d9dee5; padding-left: .3em; }
+.reveal .cell-output-stdout pre code { font-size: .95em; }
+
+/* 표 */
+.reveal table { font-size: .68em; }
+.reveal table th { background: #f0f4f9; }
+
+/* 콜아웃 */
+.reveal .callout { font-size: .72em; }
+
+/* 강조 박스 */
+.reveal .box {
+  padding: .5em .8em; border-radius: 8px; background: #f4f7fb; border-left: 5px solid #1f4e79;
+  font-size: .8em;
+}
+.reveal .small { font-size: .7em; }
+.reveal .muted { color: #8a94a3; }
+
+/* 실습 타이머 */
+.reveal .timer {
+  position: absolute; right: 0; top: 0;
+  display: inline-flex; flex-direction: column; align-items: center;
+  padding: .15em .6em; border: 3px solid #1f4e79; border-radius: 10px;
+  cursor: pointer; user-select: none; background: #fff;
+}
+.reveal .timer .timer-time { font-family: $font-family-monospace; font-size: 1.1em; font-weight: 600; color: #1f4e79; }
+.reveal .timer .timer-hint { font-size: .3em; color: #999; }
+.reveal .timer.timer-running { background: #eef5ff; }
+.reveal .timer.timer-warn { border-color: #d98e04; }
+.reveal .timer.timer-warn .timer-time { color: #d98e04; }
+.reveal .timer.timer-done { border-color: #c0392b; background: #fdecea; }
+.reveal .timer.timer-done .timer-time { color: #c0392b; }
+
+/* 긴 코드 줄은 줄바꿈 */
+.reveal pre code { white-space: pre-wrap; word-break: break-word; }
+
+/* 다이어그램: 슬라이드 높이에 맞춰 크게 */
+.reveal img.diagram    { display: block; margin: 0 auto .3em; max-height: 330px; width: auto; max-width: 100%; }
+.reveal img.diagram-lg { display: block; margin: 0 auto; max-height: 560px; width: auto; max-width: 100%; }
+
+/* 코드 글꼴 합자 끄기: <- 가 화살표 한 글자(←)로 보이지 않도록 */
+code, pre, .sourceCode, .cell-output { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }

@@ -1,0 +1,11 @@
+﻿varname_eng,varname_kor,category_kor,unit,min_teen,max_teen
+AGE_GBN,연령구분명,인구및측정정보,,,
+TEST_AGE,연령,인구및측정정보,,,
+TEST_SEX,성별,인구및측정정보,,,
+ITEM_F001,신장,신체구성,cm,120,210
+ITEM_F002,체중,신체구성,kg,20,140
+ITEM_F007,악력_좌,근력,kg,1,100
+ITEM_F008,악력_우,근력,kg,1,100
+ITEM_F009,윗몸말아올리기,근지구력,회,0,100
+ITEM_F010,반복점프,근지구력,회,1,70
+ITEM_F018,BMI,신체구성,,5,50

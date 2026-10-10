@@ -1,0 +1,62 @@
+project:
+  type: website
+  output-dir: docs          # GitHub Pages가 읽는 폴더
+  render:                   # 강의 문서만 렌더링 (downloads/의 원본 Rmd는 제외)
+    - index.qmd
+    - d1-*.qmd
+    - d2-*.qmd
+  resources:
+    - pdf/*.pdf             # 인쇄용 PDF
+    - data/*                # 실습 데이터 (내려받기)
+    - downloads/*           # 2일차 원고·코드·CSV, 데이터 묶음(zip)
+
+website:
+  title: "R 데이터 분석 · 재직자교육"
+  description: "1일차 R 기초와 데이터프레임 · 2일차 데이터 시각화와 회귀분석"
+  page-navigation: true
+  sidebar:
+    style: floating
+    contents:
+      - index.qmd
+      - section: "1일차 · R 기초와 데이터프레임"
+        contents:
+          - d1-01-r-basics.qmd
+          - d1-02-dataframe-1.qmd
+          - d1-03-dataframe-2.qmd
+          - d1-04-dataframe-3.qmd
+      - section: "2일차 · 데이터 시각화와 회귀분석"
+        contents:
+          - d2-00-intro.qmd
+          - d2-01-descriptive-statistics.qmd
+          - d2-02-ggplot2.qmd
+          - d2-03-linear-regression.qmd
+          - d2-04-sports100-practice.qmd
+  page-footer:
+    left: "재직자교육 · R 데이터 분석"
+    right: "made with [Quarto](https://quarto.org)"
+
+filters:
+  - path: filters/doc-slides.lua   # .doc = 문서에만, .only-slides = 슬라이드에만, .answer = 정답
+    at: pre-ast
+  - path: filters/chapter-numbers.lua   # 2일차: 장.절 번호
+    at: pre-ast
+
+lang: ko
+
+format:
+  html:
+    theme: [cosmo, theme/doc.scss]
+    toc: true
+    toc-depth: 3
+    toc-title: "목차"
+    toc-location: right
+    code-copy: true
+    code-overflow: wrap
+    include-in-header: theme/head.html
+    include-after-body: theme/timer.html
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: false             # 데이터가 스크립트·CSV로 바로 만들어지므로 매번 실행

@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.quarto
+_freeze
+.DS_Store
+*_files/
+!docs/*_files/
+
+/.quarto/
+
+**/*.quarto_ipynb
+_fonttest*

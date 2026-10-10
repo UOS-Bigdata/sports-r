@@ -1,0 +1,66 @@
+<!-- 실습용 카운트다운 타이머
+     사용법: <div class="timer" data-min="5"></div>  → 클릭하면 시작/일시정지, 더블클릭하면 초기화 -->
+<script>
+(function () {
+  function fmt(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+  }
+  function setup(el) {
+    if (el.dataset.ready) return;
+    el.dataset.ready = "1";
+    var total = Math.round(parseFloat(el.dataset.min || "5") * 60);
+    var left = total, id = null;
+    el.innerHTML = '<span class="timer-time"></span><span class="timer-hint">클릭: 시작/정지 · 더블클릭: 초기화</span>';
+    var t = el.querySelector(".timer-time");
+    function draw() {
+      t.textContent = fmt(left);
+      el.classList.toggle("timer-warn", left <= 60 && left > 0);
+      el.classList.toggle("timer-done", left === 0);
+      el.classList.toggle("timer-running", id !== null);
+    }
+    el.addEventListener("click", function () {
+      if (id) { clearInterval(id); id = null; }
+      else if (left > 0) {
+        id = setInterval(function () {
+          left = Math.max(0, left - 1);
+          if (left === 0) { clearInterval(id); id = null; }
+          draw();
+        }, 1000);
+      }
+      draw();
+    });
+    el.addEventListener("dblclick", function () {
+      if (id) { clearInterval(id); id = null; }
+      left = total; draw();
+    });
+    draw();
+  }
+  function init() { document.querySelectorAll(".timer").forEach(setup); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<!-- 인쇄용: 탭 제목을 각 탭 내용 위에 표시할 수 있도록 data-tab-title 지정 -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".panel-tabset").forEach(function (ts) {
+    ts.querySelectorAll(".nav-tabs .nav-link").forEach(function (a) {
+      var id = (a.getAttribute("data-bs-target") || a.getAttribute("href") || "").replace("#", "");
+      var pane = id && document.getElementById(id);
+      if (pane) pane.setAttribute("data-tab-title", a.textContent.trim());
+    });
+  });
+});
+</script>
+
+<!-- PDF 링크는 새 창에서 열기 (RStudio Viewer에서는 외부 브라우저로 열림) -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('a[href$=".pdf"]').forEach(function (a) {
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener");
+  });
+});
+</script>

@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>제2장 ggplot2를 활용한 데이터 시각화 – R 데이터 분석 · 재직자교육</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./d2-03-linear-regression.html" rel="next">
+<link href="./d2-01-descriptive-statistics.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6e4fb7f12727868f896226262ecbb89e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-58c64f851eed42c162fe1bfcb241524a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap">
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./d2-00-intro.html">2일차 · 데이터 시각화와 회귀분석</a></li><li class="breadcrumb-item"><a href="./d2-02-ggplot2.html">제2장 ggplot2를 활용한 데이터 시각화</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="검색" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R 데이터 분석 · 재직자교육</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="검색"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">R 데이터 분석 · 재직자교육</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1일차 · R 기초와 데이터프레임</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-01-r-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1교시 · R 기초</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-02-dataframe-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2교시 · 데이터프레임 다루기 I</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-03-dataframe-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3·4교시 · 데이터프레임 다루기 II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d1-04-dataframe-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5·6교시 · 데이터프레임 다루기 III</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2일차 · 데이터 시각화와 회귀분석</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-00-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2일차 강의 안내</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-01-descriptive-statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제1장 자료의 특성과 기술통계</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-02-ggplot2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">제2장 ggplot2를 활용한 데이터 시각화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-03-linear-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제3장 선형회귀분석</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./d2-04-sports100-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제4장 국민체력 100 자료를 이용한 종합 실습</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#start" id="toc-start" class="nav-link active" data-scroll-target="#start"><span class="header-section-number">2.1</span> 실습 준비</a>
+  <ul class="collapse">
+  <li><a href="#패키지-설치와-불러오기" id="toc-패키지-설치와-불러오기" class="nav-link" data-scroll-target="#패키지-설치와-불러오기"><span class="header-section-number">2.1.1</span> 패키지 설치와 불러오기</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">2.1.2</span> 실습 자료의 구조와 변수</a></li>
+  </ul></li>
+  <li><a href="#first-plot" id="toc-first-plot" class="nav-link" data-scroll-target="#first-plot"><span class="header-section-number">2.2</span> ggplot2 기본 문법</a>
+  <ul class="collapse">
+  <li><a href="#결과의-해석" id="toc-결과의-해석" class="nav-link" data-scroll-target="#결과의-해석"><span class="header-section-number">2.2.1</span> 결과의 해석</a></li>
+  <li><a href="#변수-변경" id="toc-변수-변경" class="nav-link" data-scroll-target="#변수-변경"><span class="header-section-number">2.2.2</span> 변수 변경</a></li>
+  <li><a href="#color" id="toc-color" class="nav-link" data-scroll-target="#color"><span class="header-section-number">2.2.3</span> 색상 지정과 미적 요소의 매핑</a></li>
+  <li><a href="#labels" id="toc-labels" class="nav-link" data-scroll-target="#labels"><span class="header-section-number">2.2.4</span> 제목, 축 이름과 범례 설정</a></li>
+  <li><a href="#theme" id="toc-theme" class="nav-link" data-scroll-target="#theme"><span class="header-section-number">2.2.5</span> 테마 설정과 그래프 객체</a></li>
+  </ul></li>
+  <li><a href="#graph-types" id="toc-graph-types" class="nav-link" data-scroll-target="#graph-types"><span class="header-section-number">2.3</span> 그래프 유형과 집단 비교</a>
+  <ul class="collapse">
+  <li><a href="#facet" id="toc-facet" class="nav-link" data-scroll-target="#facet"><span class="header-section-number">2.3.1</span> 패싯을 이용한 집단별 비교</a></li>
+  <li><a href="#bar" id="toc-bar" class="nav-link" data-scroll-target="#bar"><span class="header-section-number">2.3.2</span> 막대그래프를 이용한 도수 비교</a></li>
+  <li><a href="#boxplot" id="toc-boxplot" class="nav-link" data-scroll-target="#boxplot"><span class="header-section-number">2.3.3</span> 상자그림을 이용한 분포 비교</a></li>
+  </ul></li>
+  <li><a href="#plot-output" id="toc-plot-output" class="nav-link" data-scroll-target="#plot-output"><span class="header-section-number">2.4</span> 그래프 저장과 확장</a>
+  <ul class="collapse">
+  <li><a href="#export" id="toc-export" class="nav-link" data-scroll-target="#export"><span class="header-section-number">2.4.1</span> 그래프 파일 저장</a></li>
+  <li><a href="#extensions" id="toc-extensions" class="nav-link" data-scroll-target="#extensions"><span class="header-section-number">2.4.2</span> 추세선, 요약 통계와 축 설정</a></li>
+  </ul></li>
+  <li><a href="#sports" id="toc-sports" class="nav-link" data-scroll-target="#sports"><span class="header-section-number">2.5</span> 스포츠 측정 자료의 시각화</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./d2-00-intro.html">2일차 · 데이터 시각화와 회귀분석</a></li><li class="breadcrumb-item"><a href="./d2-02-ggplot2.html">제2장 ggplot2를 활용한 데이터 시각화</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">제2장 ggplot2를 활용한 데이터 시각화</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>앞 장에서는 자료의 중심과 산포를 요약하고, R의 기본 그래픽 함수로 변수의 분포와 관계를 살펴보았습니다. 이 장에서는 같은 분석 목적을 <strong>ggplot2</strong> 패키지의 문법으로 구현합니다. 자료, 미적 요소, 도형을 구분하여 지정하고, 필요한 표현 요소를 추가하는 방식으로 그래프를 구성합니다.</p>
+<p>실습에는 <code>ggplot2</code>에 포함된 자동차 연비 자료인 <code>mpg</code>를 사용합니다. 산점도, 막대그래프, 상자그림을 작성하면서 <code>ggplot()</code>의 기본 구조를 익히고, 집단별 비교와 요약 통계의 시각화로 확장합니다. 마지막으로 같은 문법을 스포츠 측정 자료에 적용합니다.</p>
+<section id="start" class="level2">
+<h2 class="anchored" data-anchor-id="start"><span class="header-section-number">2.1</span> 실습 준비</h2>
+<section id="패키지-설치와-불러오기" class="level3">
+<h3 class="anchored" data-anchor-id="패키지-설치와-불러오기"><span class="header-section-number">2.1.1</span> 패키지 설치와 불러오기</h3>
+<p><strong>패키지(package)</strong>는 특정 작업에 필요한 함수와 자료를 모아 제공하는 단위입니다. <code>ggplot2</code>는 일관된 문법으로 다양한 그래프를 작성할 수 있도록 지원하는 시각화 패키지입니다. 패키지를 사용하려면 설치와 불러오기 과정을 구분해야 합니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">작업</th>
+<th style="text-align: left;">코드</th>
+<th style="text-align: left;">실행 시점</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">설치</td>
+<td style="text-align: left;"><code>install.packages("ggplot2")</code></td>
+<td style="text-align: left;">처음 한 번. 인터넷이 필요합니다. R을 새로 설치한 경우 다시 필요할 수 있습니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">불러오기</td>
+<td style="text-align: left;"><code>library(ggplot2)</code></td>
+<td style="text-align: left;">새로운 R 작업 세션을 시작할 때마다 실행합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>패키지가 설치되어 있지 않은 경우 Console에서 다음 코드를 실행합니다. 설치에는 인터넷 연결이 필요하며, 교재를 생성하는 과정에서는 설치 코드를 자동 실행하지 않습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>설치된 패키지는 <code>library()</code>를 통해 불러옵니다. 이 과정은 새로운 R 세션에서 해당 패키지를 사용할 때마다 필요합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data"><span class="header-section-number">2.1.2</span> 실습 자료의 구조와 변수</h3>
+<p><code>mpg</code>는 <code>ggplot2</code> 패키지에 포함된 자동차 연비 자료입니다. 패키지를 불러오면 별도의 파일 입력 없이 사용할 수 있습니다.</p>
+<p>이 자료는 행과 열로 구성된 <strong>데이터프레임(data frame)</strong> 형태입니다. 행은 관측 한 건을, 열은 관측한 항목인 변수를 나타냅니다. <code>mpg</code>에는 차량 사양별 연비 관측 234행과 변수 11개가 포함되어 있습니다. 동일한 자동차 모델이 여러 행에 나타날 수 있으므로 행 수와 모델 수는 구분해야 합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mpg)       <span class="co"># 첫 6행을 봅니다.</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class 
+  &lt;chr&gt;        &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; 
+1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…
+2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…
+3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…
+4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…
+5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…
+6 audi         a4      2.8  1999     6 manual(m5) f        18    26 p     compa…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(mpg)        <span class="co"># 행 개수, 열 개수 순서로 나옵니다.</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 234  11</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mpg)      <span class="co"># 사용할 수 있는 열 이름을 봅니다.</span></span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "manufacturer" "model"        "displ"        "year"         "cyl"         
+ [6] "trans"        "drv"          "cty"          "hwy"          "fl"          
+[11] "class"       </code></pre>
+</div>
+</div>
+<p><code>head()</code>는 자료의 앞부분을, <code>dim()</code>은 행과 열의 수를, <code>names()</code>는 변수명을 출력합니다. <code>dim(mpg)</code>의 결과인 <code>234 11</code>은 234행과 11열을 의미합니다. 이 장에서 사용하는 주요 변수는 다음과 같습니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">열 이름</th>
+<th style="text-align: left;">뜻</th>
+<th style="text-align: left;">값의 종류</th>
+<th style="text-align: left;">그래프에서 읽는 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>displ</code></td>
+<td style="text-align: left;">엔진 배기량</td>
+<td style="text-align: left;">숫자, L</td>
+<td style="text-align: left;">값이 클수록 배기량이 큽니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>hwy</code></td>
+<td style="text-align: left;">고속도로 연비</td>
+<td style="text-align: left;">숫자, mile/gallon</td>
+<td style="text-align: left;">같은 연료로 가는 거리이며 값이 클수록 연비가 높습니다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>cty</code></td>
+<td style="text-align: left;">도심 연비</td>
+<td style="text-align: left;">숫자, mile/gallon</td>
+<td style="text-align: left;"><code>hwy</code>와 단위가 같습니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>class</code></td>
+<td style="text-align: left;">차종</td>
+<td style="text-align: left;">범주</td>
+<td style="text-align: left;"><code>compact</code>, <code>suv</code> 같은 이름입니다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>drv</code></td>
+<td style="text-align: left;">구동방식</td>
+<td style="text-align: left;">범주</td>
+<td style="text-align: left;"><code>f</code>: 전륜, <code>r</code>: 후륜, <code>4</code>: 사륜입니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>숫자형 변수</strong>는 크기를 비교할 수 있는 측정값이고, <strong>범주형 변수</strong>는 집단을 구분하는 이름입니다. <code>drv</code>의 <code>4</code>는 사륜구동이라는 이름이며 수량 4를 뜻하지 않습니다. <code>mpg</code>의 연비 단위는 국내에서 흔히 쓰는 km/L와 다릅니다.</p>
+<blockquote class="blockquote">
+<p><strong>참고:</strong> <code>head(mpg, 10)</code>과 같이 두 번째 인자를 지정하면 앞의 10행을 출력할 수 있습니다.</p>
+</blockquote>
+</section>
+</section>
+<section id="first-plot" class="level2">
+<h2 class="anchored" data-anchor-id="first-plot"><span class="header-section-number">2.2</span> ggplot2 기본 문법</h2>
+<p><strong>산점도(scatter plot)</strong>는 두 수치형 변수의 관계를 나타내는 그래프입니다. 각 관측의 두 측정값을 가로축과 세로축의 좌표로 사용하여 점으로 표시합니다. 여기서는 배기량(<code>displ</code>)과 고속도로 연비(<code>hwy</code>)의 관계를 살펴봅니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mpg, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/first-scatter-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.1: 배기량과 고속도로 연비의 관계. 점 하나는 자료의 관측 한 건입니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>ggplot2</code>의 그래프는 <strong>자료</strong>, <strong>변수와 시각적 속성의 연결</strong>, <strong>표현할 도형</strong>을 지정하는 방식으로 구성됩니다. 여기에 필요한 요소를 <code>+</code>로 추가합니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">코드</th>
+<th style="text-align: left;">역할</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>ggplot(data = mpg, ...)</code></td>
+<td style="text-align: left;">그래프 작성에 사용할 자료를 지정합니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>aes(x = displ, y = hwy)</code></td>
+<td style="text-align: left;">배기량과 연비를 각각 가로축과 세로축에 연결합니다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>geom_point()</code></td>
+<td style="text-align: left;">관측값을 점으로 표현합니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>+</code></td>
+<td style="text-align: left;">도형, 축 이름, 테마 등의 구성 요소를 추가합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>자료의 변수를 위치·색·크기 등의 시각적 속성에 연결하는 것을 <strong>매핑(mapping)</strong>이라고 합니다. <code>aes()</code>는 이러한 연결을 지정하는 함수입니다. <code>x</code>, <code>y</code>, <code>color</code> 등은 그래프의 <strong>미적 요소(aesthetic)</strong>에 해당합니다.</p>
+<p><code>aes()</code> 안의 <code>displ</code>, <code>hwy</code>는 <code>mpg</code>의 <strong>열 이름이므로 따옴표를 쓰지 않습니다</strong>. <code>aes(x = "displ")</code>처럼 쓰면 열의 숫자가 아니라 <code>displ</code>이라는 같은 글자를 모든 행에 연결하게 됩니다.</p>
+<section id="결과의-해석" class="level3">
+<h3 class="anchored" data-anchor-id="결과의-해석"><span class="header-section-number">2.2.1</span> 결과의 해석</h3>
+<p>오른쪽으로 갈수록 배기량이 크고, 위로 갈수록 고속도로 연비가 높습니다. 전체적으로 오른쪽에 있는 점들이 아래쪽에 많이 놓여 있습니다. 따라서 <strong>이 자료에서는 배기량이 큰 관측에서 연비가 낮은 경향</strong>을 읽을 수 있습니다. 이 그림만으로 배기량이 연비 변화의 유일한 원인이라고 결론 내리지는 않습니다.</p>
+<p>같은 위치의 점은 겹칠 수 있습니다. 자료가 234행이라고 해서 화면에서 점 234개가 각각 구분되어 보이는 것은 아닙니다.</p>
+</section>
+<section id="변수-변경" class="level3">
+<h3 class="anchored" data-anchor-id="변수-변경"><span class="header-section-number">2.2.2</span> 변수 변경</h3>
+<p>위 코드에서 <code>y = hwy</code>를 <code>y = cty</code>로 변경하면 배기량과 도심 연비의 관계를 확인할 수 있습니다. 동일한 그래프 구조에서 변수명만 변경하여 다른 관계를 분석하는 방식입니다.</p>
+<p>이후 예제에서는 <code>ggplot(mpg, aes(...))</code>와 같이 인자 이름을 생략한 표현을 사용합니다. 이는 앞의 코드에서 <code>data =</code>와 <code>mapping =</code>을 생략한 것으로, 기능은 동일합니다.</p>
+<blockquote class="blockquote">
+<p><strong>코드 작성 시 유의사항:</strong> 여러 줄로 그래프를 작성할 때는 <code>+</code>를 줄 끝에 배치하며 마지막 줄에는 사용하지 않습니다. Console의 입력 표시가 <code>&gt;</code> 대신 <code>+</code>로 유지되면 괄호나 따옴표가 닫히지 않았거나 명령이 완성되지 않은 경우일 수 있습니다. Esc를 누르면 진행 중인 입력을 취소할 수 있습니다.</p>
+</blockquote>
+</section>
+<section id="color" class="level3">
+<h3 class="anchored" data-anchor-id="color"><span class="header-section-number">2.2.3</span> 색상 지정과 미적 요소의 매핑</h3>
+<section id="고정-색상-지정" class="level4">
+<h4 class="anchored" data-anchor-id="고정-색상-지정"><span class="header-section-number">2.2.3.1</span> 고정 색상 지정</h4>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"steelblue"</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/fixed-color-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.2: 모든 점에 같은 색과 크기를 지정한 산점도.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>color</code>는 색상, <code>size</code>는 점의 크기, <code>alpha</code>는 불투명도를 지정합니다. <code>alpha</code>는 0이면 완전히 투명하고 1이면 불투명합니다. 점이 겹치는 경우에는 값을 낮춰 관측의 밀집 정도를 확인할 수 있습니다. <code>"steelblue"</code>는 R에서 지원하는 색상 이름입니다.</p>
+</section>
+<section id="범주형-변수의-색상-매핑" class="level4">
+<h4 class="anchored" data-anchor-id="범주형-변수의-색상-매핑"><span class="header-section-number">2.2.3.2</span> 범주형 변수의 색상 매핑</h4>
+<p>범주형 변수를 색상에 매핑하면 집단별 관측의 분포를 한 그래프에서 비교할 수 있습니다. 다음은 구동방식(<code>drv</code>)에 따라 색상을 구분한 예제입니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy, <span class="at">color =</span> drv)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/mapped-color-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.3: 구동방식에 따라 색이 달라지고 범례가 자동으로 생깁니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>이번에는 <code>color = drv</code>를 <strong><code>aes()</code> 안</strong>에 넣었습니다. 각 행의 구동방식을 읽고 그룹에 따라 다른 색을 정하며, 색의 의미를 설명하는 <strong>범례</strong>도 자동으로 만듭니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">목적</th>
+<th style="text-align: left;">쓰는 위치</th>
+<th style="text-align: left;">예시</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">값에 따라 색을 나누기</td>
+<td style="text-align: left;"><code>aes()</code> 안</td>
+<td style="text-align: left;"><code>aes(color = drv)</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">모든 점에 같은 색 쓰기</td>
+<td style="text-align: left;"><code>aes()</code> 밖</td>
+<td style="text-align: left;"><code>geom_point(color = "steelblue")</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>color = drv</code>를 <code>color = class</code>로 변경하면 차종별로 색상이 구분됩니다. 이때 변수명은 따옴표 없이 지정합니다. <code>color = "drv"</code>와 같이 작성하면 변수의 값이 아니라 하나의 문자열을 매핑하게 됩니다.</p>
+</section>
+</section>
+<section id="labels" class="level3">
+<h3 class="anchored" data-anchor-id="labels"><span class="header-section-number">2.2.4</span> 제목, 축 이름과 범례 설정</h3>
+<p>그래프에는 분석 대상과 측정 단위가 명확하게 드러나야 합니다. <code>labs()</code>는 제목, 부제, 축 이름, 범례 제목, 자료 출처 등을 지정하는 함수입니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy, <span class="at">color =</span> drv)) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"배기량과 고속도로 연비의 관계"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"구동방식별 비교: 4 = 사륜, f = 전륜, r = 후륜"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"배기량 (L)"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"고속도로 연비 (mile/gallon)"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"구동방식"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"자료: ggplot2 패키지의 mpg"</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/labeled-plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.4: 제목과 축 단위를 추가하면 그래프의 질문과 측정값을 파악하기 쉽습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>괄호 안에서는 항목을 <strong>쉼표 <code>,</code>로 구분</strong>합니다. <code>labs()</code> 안에 들어가는 제목은 글자이므로 따옴표로 감쌉니다. <code>labs(color = "구동방식")</code>은 범례의 제목을 바꾸며 자료 속 <code>4</code>, <code>f</code>, <code>r</code> 값은 그대로 둡니다.</p>
+<p>그래프의 변수를 변경하면 제목과 축 이름도 함께 수정해야 합니다. 예를 들어 <code>y = cty</code>를 사용한 경우 세로축 이름을 <code>"도심 연비 (mile/gallon)"</code>로 지정하여 코드와 설명의 일관성을 유지합니다.</p>
+</section>
+<section id="theme" class="level3">
+<h3 class="anchored" data-anchor-id="theme"><span class="header-section-number">2.2.5</span> 테마 설정과 그래프 객체</h3>
+<p><code>theme_minimal()</code>은 배경과 눈금선 등 전체 디자인을 간결하게 바꿉니다. <code>theme_bw()</code>는 흰 배경에 테두리가 있는 스타일, <code>theme_classic()</code>은 축 중심의 단순한 스타일입니다.</p>
+<p>아래에서는 완성된 그래프를 <strong><code>p</code>라는 이름에 저장</strong>합니다. <code>p &lt;-</code>로 저장만 하면 화면에 바로 나오지 않을 수 있으므로 마지막에 <code>p</code>를 실행합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy, <span class="at">color =</span> drv)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"배기량과 고속도로 연비"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"4 = 사륜구동, f = 전륜구동, r = 후륜구동"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"배기량 (L)"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"고속도로 연비 (mile/gallon)"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"구동방식"</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/save-plot-object-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.5: p에 저장한 그래프. 이 객체를 이후 파일 저장 예제에서 사용합니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>base_size = 13</code>은 기본 글자 크기입니다. 이제 <code>p</code>를 실행하면 같은 그래프를 다시 볼 수 있습니다. <code>p + theme_bw()</code>를 실행하면 저장된 그래프에 다른 테마를 적용한 결과가 나옵니다. <strong><code>p</code> 자체를 바꾸려면</strong> <code>p &lt;- p + theme_bw()</code>처럼 다시 저장해야 합니다.</p>
+<p><code>geom_point()</code>는 관측값의 표현 방식, <code>labs()</code>는 그래프의 설명 문구, <code>theme_*()</code>는 배경과 글자 등 비자료 요소의 서식을 설정합니다. 각 요소는 서로 다른 역할을 하며 <code>+</code>로 연결됩니다.</p>
+</section>
+</section>
+<section id="graph-types" class="level2">
+<h2 class="anchored" data-anchor-id="graph-types"><span class="header-section-number">2.3</span> 그래프 유형과 집단 비교</h2>
+<section id="facet" class="level3">
+<h3 class="anchored" data-anchor-id="facet"><span class="header-section-number">2.3.1</span> 패싯을 이용한 집단별 비교</h3>
+<p>여러 집단을 하나의 그래프에 표시하면 관측값이 겹쳐 집단별 특성을 파악하기 어려울 수 있습니다. <strong>패싯(facet)</strong>은 자료를 집단별로 나누어 동일한 형식의 그래프를 각각 배치하는 방법입니다. <code>facet_wrap()</code>을 사용하면 범주형 변수의 값에 따라 패널을 구성할 수 있습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"steelblue"</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> drv) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"구동방식별 배기량과 연비"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"4 = 사륜구동, f = 전륜구동, r = 후륜구동"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"배기량 (L)"</span>, <span class="at">y =</span> <span class="st">"고속도로 연비 (mile/gallon)"</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/facets-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.6: 구동방식별로 나눈 산점도. 패널의 축 범위가 같아 위치를 비교할 수 있습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>~ drv</code>는 패널을 구분할 변수로 <code>drv</code>를 지정하는 수식 표현입니다. 기본 설정에서는 패널의 축 범위가 동일하므로 집단 간 관측값의 위치와 퍼짐을 비교할 수 있습니다.</p>
+<p><code>facet_wrap(~ class, ncol = 3)</code>으로 변경하면 차종별 패널을 한 행에 세 개씩 배치합니다. 패널을 비교할 때에는 각 집단의 관측 수가 다르다는 점도 고려해야 합니다.</p>
+</section>
+<section id="bar" class="level3">
+<h3 class="anchored" data-anchor-id="bar"><span class="header-section-number">2.3.2</span> 막대그래프를 이용한 도수 비교</h3>
+<p><strong>막대그래프(bar chart)</strong>는 범주별 빈도나 요약값을 막대의 길이로 나타냅니다. 다음 예제에서는 차종별 관측 수를 비교합니다. <code>geom_bar()</code>는 기본적으로 각 범주에 해당하는 행의 수를 계산하므로, 도수를 미리 집계하거나 <code>y</code>를 지정할 필요가 없습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> class)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"차종별 관측 수"</span>, <span class="at">x =</span> <span class="st">"차종"</span>, <span class="at">y =</span> <span class="st">"관측 수 (건)"</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/count-bar-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.7: 차종별 관측 수. 이 자료에서는 suv의 관측이 가장 많습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>막대의 내부 색은 <strong><code>fill</code></strong>, 테두리 색은 <strong><code>color</code></strong>로 지정합니다. 차종별 내부 색을 나누고 싶다면 <code>aes(x = class, fill = class)</code>로 작성하고 <code>geom_bar()</code>의 고정 <code>fill</code>을 지웁니다.</p>
+<p>개수를 숫자로 확인할 때는 <code>table()</code>을 사용할 수 있습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(mpg<span class="sc">$</span>class)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   2seater    compact    midsize    minivan     pickup subcompact        suv 
+         5         47         41         11         33         35         62 </code></pre>
+</div>
+</div>
+<p><code>mpg$class</code>는 데이터프레임 <code>mpg</code>에서 <code>class</code> 열을 선택하는 표현입니다. 출력 결과에서 <code>suv</code>의 도수는 62입니다. 이 값은 자료에 포함된 관측 수이며, 실제 시장의 판매량이나 보유 대수를 의미하지 않습니다.</p>
+<p><code>x = drv</code>로 변경하면 구동방식별 관측 수를 비교할 수 있습니다. 이 경우 제목과 가로축 이름도 해당 변수에 맞게 수정합니다.</p>
+</section>
+<section id="boxplot" class="level3">
+<h3 class="anchored" data-anchor-id="boxplot"><span class="header-section-number">2.3.3</span> 상자그림을 이용한 분포 비교</h3>
+<p><strong>상자그림(box plot)</strong>은 중앙값과 사분위수 등을 이용하여 수치형 변수의 분포를 요약하는 그래프입니다. 집단별 측정값의 중심과 퍼짐을 비교하는 데 사용합니다. 다음은 차종별 고속도로 연비의 분포를 나타낸 예제입니다. <code>x</code>에는 집단을 구분하는 변수, <code>y</code>에는 측정값을 지정합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> class, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"차종별 고속도로 연비 분포"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"차종"</span>, <span class="at">y =</span> <span class="st">"고속도로 연비 (mile/gallon)"</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/boxplot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.8: 차종별 고속도로 연비 분포. 상자 안의 선은 평균이 아니라 중앙값입니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>theme(axis.text.x = element_text(angle = 45, hjust = 1))</code>은 가로축 글자를 45도 회전하고 끝을 맞춰 겹침을 줄입니다. 전체 테마 다음에 세부 설정을 추가하는 순서로 쓰면 됩니다.</p>
+<section id="상자그림의-구성과-해석" class="level4">
+<h4 class="anchored" data-anchor-id="상자그림의-구성과-해석"><span class="header-section-number">2.3.3.1</span> 상자그림의 구성과 해석</h4>
+<ol type="1">
+<li><strong>상자 안의 굵은 선:</strong> 값을 작은 순서로 놓았을 때 가운데에 해당하는 중앙값입니다. 평균과는 다릅니다.</li>
+<li><strong>상자의 아래·위 경계:</strong> 각각 25%, 75% 지점에 해당하는 사분위수입니다. 상자는 가운데 약 50%의 값이 있는 구간입니다.</li>
+<li><strong>수염:</strong> 상자 아래·위 경계에서 각각 상자 높이(IQR)의 1.5배 이내에 있는 관측 중 가장 먼 값까지 이어집니다. 항상 최솟값과 최댓값인 것은 아닙니다.</li>
+<li><strong>수염 밖의 점:</strong> 위 기준을 벗어난 관측입니다. 값이 상대적으로 멀리 있다는 뜻이며, 오류 데이터라고 단정해 삭제하지 않습니다.</li>
+</ol>
+<p>이 그림에서는 <code>suv</code>의 중앙값이 <code>compact</code>보다 낮게 나타납니다. 집단 간 차이는 중앙값뿐 아니라 상자의 높이와 관측 수도 함께 고려하여 해석합니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="보충 예제: 상자그림과 개별 관측값의 결합">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+보충 예제: 상자그림과 개별 관측값의 결합
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> class, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">height =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="fl">0.35</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"차종"</span>, <span class="at">y =</span> <span class="st">"고속도로 연비 (mile/gallon)"</span>) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/boxplot-points-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.9: 점을 좌우로만 조금 흩어 놓아 관측의 겹침을 줄인 그림.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>geom_jitter()</code>는 겹친 점을 조금 흩어 표시합니다. <code>height = 0</code>이므로 측정값의 세로 위치는 그대로입니다. <code>set.seed()</code>는 임의로 흩어지는 위치를 재현하기 위한 설정입니다. <code>outlier.shape = NA</code>는 상자그림 자체의 수염 밖 점 표시만 숨깁니다. 뒤에 모든 관측점을 그리므로 같은 관측을 두 번 강조하지 않게 됩니다.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="plot-output" class="level2">
+<h2 class="anchored" data-anchor-id="plot-output"><span class="header-section-number">2.4</span> 그래프 저장과 확장</h2>
+<section id="export" class="level3">
+<h3 class="anchored" data-anchor-id="export"><span class="header-section-number">2.4.1</span> 그래프 파일 저장</h3>
+<p><code>ggsave()</code>는 그래프 객체를 이미지 파일로 저장하는 함수입니다. 저장한 파일은 보고서나 발표 자료에 사용할 수 있습니다. 다음 예제는 앞의 <a href="#theme">테마 설정과 그래프 객체</a>에서 생성한 <code>p</code>를 사용합니다.</p>
+<p>다음 코드는 내 컴퓨터에서 직접 실행하는 저장 예제입니다. 교재를 렌더링할 때에는 자동 실행하지 않습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getwd</span>()  <span class="co"># 현재 작업 폴더를 확인합니다.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"outputs"</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"outputs/mpg_scatter.png"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">18</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">12</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">units =</span> <span class="st">"cm"</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dpi =</span> <span class="dv">300</span>,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"white"</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>dir.create()</code>는 현재 작업 폴더 안에 <code>outputs</code> 폴더를 생성합니다. <code>plot = p</code>는 저장할 그래프 객체를 지정합니다. 예제에서는 가로 18cm, 세로 12cm, 300dpi로 저장합니다. 같은 경로에 동일한 이름의 파일이 있으면 덮어쓰므로, 기존 파일을 유지할 경우 다른 이름을 지정합니다.</p>
+<p>저장 결과는 RStudio의 Files에서 <code>outputs/mpg_scatter.png</code>를 열어 확인할 수 있습니다. 상대 경로는 현재 작업 폴더를 기준으로 해석되므로 <code>getwd()</code>로 저장 위치를 확인합니다.</p>
+</section>
+<section id="extensions" class="level3">
+<h3 class="anchored" data-anchor-id="extensions"><span class="header-section-number">2.4.2</span> 추세선, 요약 통계와 축 설정</h3>
+<section id="추세선의-추가" class="level4">
+<h4 class="anchored" data-anchor-id="추세선의-추가"><span class="header-section-number">2.4.2.1</span> 추세선의 추가</h4>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg, <span class="fu">aes</span>(<span class="at">x =</span> displ, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"배기량과 연비의 전체적인 경향"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"배기량 (L)"</span>, <span class="at">y =</span> <span class="st">"고속도로 연비 (mile/gallon)"</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/trend-line-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.10: 직선으로 요약한 전체 추세. 점과 추세선을 함께 읽습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>geom_smooth()</code>는 변수 간 관계를 요약하는 추세선을 추가합니다. <code>method = "lm"</code>은 선형모형을 사용하며, <code>formula = y ~ x</code>는 y를 x의 선형관계로 설명하도록 지정합니다. <code>se = FALSE</code>는 신뢰구간 표시를 생략하는 옵션입니다.</p>
+<p><code>se = TRUE</code>로 바꾸면 기본적으로 적합된 평균 반응에 대한 95% 신뢰구간 띠가 표시됩니다. 이 띠가 관측값 95%를 포함한다는 뜻은 아닙니다. 직선이 모든 점을 잘 설명하는지도 함께 살펴보고, 선만 보고 원인과 결과를 판단하지 않습니다.</p>
+<p><code>geom_smooth(method = "loess", formula = y ~ x, se = FALSE)</code>로 바꾸면 이 작은 자료에서 굽은 경향을 살펴볼 수 있습니다.</p>
+<blockquote class="blockquote">
+<p><strong>색과 추세선의 관계:</strong> <code>ggplot()</code>의 <code>aes()</code> 안에 <code>color = drv</code>를 넣으면 뒤에 추가한 추세선도 구동방식별로 나뉩니다. 점만 색으로 구분하고 선은 전체 자료로 하나만 그리려면 <code>geom_point(aes(color = drv))</code>에 색 연결을 넣습니다.</p>
+</blockquote>
+</section>
+<section id="집단별-평균의-시각화" class="level4">
+<h4 class="anchored" data-anchor-id="집단별-평균의-시각화"><span class="header-section-number">2.4.2.2</span> 집단별 평균의 시각화</h4>
+<p>집단별 평균이나 합계를 시각화하려면 원자료를 먼저 요약해야 합니다. 여기서는 자료 처리 패키지인 <code>dplyr</code>을 이용하여 차종별 평균 고속도로 연비와 관측 수를 계산합니다. 패키지가 설치되어 있지 않은 경우 다음 설치 코드를 먼저 실행합니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>mpg_sum <span class="ot">&lt;-</span> mpg <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>mpg_sum</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 3
+  class      mean_hwy     n
+  &lt;chr&gt;         &lt;dbl&gt; &lt;int&gt;
+1 2seater        24.8     5
+2 compact        28.3    47
+3 midsize        27.3    41
+4 minivan        22.4    11
+5 pickup         16.9    33
+6 subcompact     28.1    35
+7 suv            18.1    62</code></pre>
+</div>
+</div>
+<p>위 코드는 <code>mpg</code>를 차종별로 구분하고, 각 집단의 평균과 관측 수를 계산하여 <code>mpg_sum</code>에 저장합니다. 각 함수와 연산자의 역할은 다음과 같습니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">코드</th>
+<th style="text-align: left;">기능</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>%&gt;%</code></td>
+<td style="text-align: left;">앞의 결과를 다음 함수의 입력으로 전달하는 파이프 연산자입니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>group_by(class)</code></td>
+<td style="text-align: left;">같은 차종끼리 묶습니다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>summarise(...)</code></td>
+<td style="text-align: left;">집단마다 요약한 한 행을 만듭니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mean_hwy = mean(hwy)</code></td>
+<td style="text-align: left;">hwy의 평균을 계산하고 결과 열을 mean_hwy라고 부릅니다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>n = n()</code></td>
+<td style="text-align: left;">집단의 행 개수를 n이라는 열에 저장합니다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>.groups = "drop"</code></td>
+<td style="text-align: left;">요약 후 집단 묶음을 해제합니다.</td>
+</tr>
+</tbody>
+</table>
+<p><code>%&gt;%</code>는 데이터를 다음 작업으로 전달하고, 그래프 코드의 <code>+</code>는 그래프 구성 요소를 추가합니다. 서로 바꿔 쓸 수 없습니다. 이 자료의 <code>hwy</code>에는 결측값이 없지만, 다른 자료에 <code>NA</code>가 있다면 원인과 개수를 확인한 뒤 평균에서 제외할지 결정해야 합니다. <code>mean(hwy, na.rm = TRUE)</code>는 결측값을 제외하는 계산이며, <code>n()</code>에는 결측 행도 포함됩니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg_sum, <span class="fu">aes</span>(<span class="at">x =</span> class, <span class="at">y =</span> mean_hwy)) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"차종별 평균 고속도로 연비"</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"차종"</span>, <span class="at">y =</span> <span class="st">"평균 고속도로 연비 (mile/gallon)"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/mean-bar-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.11: 차종별 평균 고속도로 연비. 막대 높이는 관측 수가 아니라 계산한 평균입니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>평균 막대그래프는 집단의 중심을 비교하는 데 유용하지만, 집단 내 분포를 보여 주지는 않습니다. 자료의 퍼짐을 함께 검토하려면 상자그림 등 분포를 나타내는 그래프를 병행합니다.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">시각화 대상</th>
+<th style="text-align: left;">함수</th>
+<th style="text-align: left;">자료와 축 지정</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">집단별 개수</td>
+<td style="text-align: left;"><code>geom_bar()</code></td>
+<td style="text-align: left;">원자료, <code>x</code>만 지정</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">이미 계산한 평균·합계 등</td>
+<td style="text-align: left;"><code>geom_col()</code></td>
+<td style="text-align: left;">요약표, <code>x</code>와 <code>y</code> 지정</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="보충 예제: 평균에 따른 정렬과 가로 막대그래프">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+보충 예제: 평균에 따른 정렬과 가로 막대그래프
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mpg_sum, <span class="fu">aes</span>(<span class="at">x =</span> mean_hwy, <span class="at">y =</span> <span class="fu">reorder</span>(class, mean_hwy))) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"평균 고속도로 연비 (mile/gallon)"</span>, <span class="at">y =</span> <span class="st">"차종"</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/sorted-mean-bar-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.12: 평균으로 정렬한 가로 막대그래프.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>reorder(class, mean_hwy)</code>는 평균 크기에 따라 차종의 순서를 정합니다. 숫자를 <code>x</code>, 차종을 <code>y</code>에 두면 가로 막대가 됩니다. <code>x = class, y = mean_hwy</code>로 그린 그래프에 <code>coord_flip()</code>을 더해 축 방향을 바꾸는 방법도 있습니다.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="축-범위와-척도-설정" class="level4">
+<h4 class="anchored" data-anchor-id="축-범위와-척도-설정"><span class="header-section-number">2.4.2.3</span> 축 범위와 척도 설정</h4>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">15</span>, <span class="dv">35</span>))</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/zoom-plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.13: 연비 15–35 구간을 확대해 본 그림. 화면 밖의 관측이 자료에서 삭제되지는 않습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>c(15, 35)</code>는 두 숫자를 묶으며 여기서는 아래·위 경계를 정합니다. <strong><code>coord_cartesian()</code>은 화면에 보이는 구간을 확대</strong>합니다. <code>scale_y_continuous(limits = c(15, 35))</code>는 기본적으로 범위 밖 값을 결측 처리해 추세선 같은 통계 계산에도 영향을 줄 수 있습니다. 일부 구간의 확대가 목적이라면 <code>coord_cartesian()</code>을 사용합니다. 막대그래프는 길이로 크기를 비교하므로 기준점 0을 잘라 차이를 과장하지 않도록 합니다.</p>
+<p><code>scale_x_log10()</code>은 양수인 가로축 값을 로그 척도로 바꾸는 별도 기능입니다. 값이 여러 자릿수에 걸쳐 퍼진 자료에서 쓸 수 있지만, 0이나 음수에는 그대로 적용할 수 없으며 축 해석도 달라집니다. 이번 기초 실습에서는 일반 축을 사용합니다.</p>
+</section>
+</section>
+</section>
+<section id="sports" class="level2">
+<h2 class="anchored" data-anchor-id="sports"><span class="header-section-number">2.5</span> 스포츠 측정 자료의 시각화</h2>
+<p>앞에서 살펴본 시각화 방법을 스포츠 측정 자료에 적용합니다. 다음은 운동 참여자 8명의 집단, 악력, 점프 높이로 구성된 <strong>가상 자료</strong>입니다. 분석 절차를 설명하기 위해 작성한 값으로, 실제 연구 결과나 평가 기준을 의미하지 않습니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sports <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>),</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">grip_kg =</span> <span class="fu">c</span>(<span class="dv">28</span>, <span class="dv">32</span>, <span class="dv">35</span>, <span class="dv">30</span>, <span class="dv">38</span>, <span class="dv">42</span>, <span class="dv">36</span>, <span class="dv">40</span>),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">jump_cm =</span> <span class="fu">c</span>(<span class="dv">31</span>, <span class="dv">35</span>, <span class="dv">33</span>, <span class="dv">29</span>, <span class="dv">38</span>, <span class="dv">42</span>, <span class="dv">34</span>, <span class="dv">40</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>sports</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  id group grip_kg jump_cm
+1  1     A      28      31
+2  2     A      32      35
+3  3     A      35      33
+4  4     A      30      29
+5  5     B      38      38
+6  6     B      42      42
+7  7     B      36      34
+8  8     B      40      40</code></pre>
+</div>
+</div>
+<p><code>data.frame()</code>은 각 변수를 열로 갖는 데이터프레임을 생성합니다. <code>c()</code>는 여러 값을 하나의 벡터로 결합하며, <code>1:8</code>은 1부터 8까지의 정수 수열입니다. 예제의 각 열은 8개의 값으로 구성됩니다. <code>group</code>은 집단, <code>grip_kg</code>는 악력(kg), <code>jump_cm</code>는 점프 높이(cm)를 나타냅니다.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sports, <span class="fu">aes</span>(<span class="at">x =</span> grip_kg, <span class="at">y =</span> jump_cm, <span class="at">color =</span> group)) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"악력과 점프 높이의 관계"</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"문법 연습용 가상 자료 · 8명"</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"악력 (kg)"</span>, <span class="at">y =</span> <span class="st">"점프 높이 (cm)"</span>, <span class="at">color =</span> <span class="st">"집단"</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="d2-02-ggplot2_files/figure-html/sports-scatter-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>그림 2.14: 가상의 스포츠 측정 자료. 같은 그래프 구조에서 데이터와 열 이름을 바꾸었습니다.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>facet_wrap(~ group)</code>을 추가하면 집단별 산점도를 별도의 패널에 배치할 수 있습니다. 자료와 변수명이 달라져도 데이터 지정, 미적 요소의 매핑, 도형과 설명 요소의 추가라는 그래프 작성 구조는 동일하게 적용됩니다.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<!-- 실습용 카운트다운 타이머
+     사용법: <div class="timer" data-min="5"></div>  → 클릭하면 시작/일시정지, 더블클릭하면 초기화 -->
+<script>
+(function () {
+  function fmt(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+  }
+  function setup(el) {
+    if (el.dataset.ready) return;
+    el.dataset.ready = "1";
+    var total = Math.round(parseFloat(el.dataset.min || "5") * 60);
+    var left = total, id = null;
+    el.innerHTML = '<span class="timer-time"></span><span class="timer-hint">클릭: 시작/정지 · 더블클릭: 초기화</span>';
+    var t = el.querySelector(".timer-time");
+    function draw() {
+      t.textContent = fmt(left);
+      el.classList.toggle("timer-warn", left <= 60 && left > 0);
+      el.classList.toggle("timer-done", left === 0);
+      el.classList.toggle("timer-running", id !== null);
+    }
+    el.addEventListener("click", function () {
+      if (id) { clearInterval(id); id = null; }
+      else if (left > 0) {
+        id = setInterval(function () {
+          left = Math.max(0, left - 1);
+          if (left === 0) { clearInterval(id); id = null; }
+          draw();
+        }, 1000);
+      }
+      draw();
+    });
+    el.addEventListener("dblclick", function () {
+      if (id) { clearInterval(id); id = null; }
+      left = total; draw();
+    });
+    draw();
+  }
+  function init() { document.querySelectorAll(".timer").forEach(setup); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<!-- 인쇄용: 탭 제목을 각 탭 내용 위에 표시할 수 있도록 data-tab-title 지정 -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".panel-tabset").forEach(function (ts) {
+    ts.querySelectorAll(".nav-tabs .nav-link").forEach(function (a) {
+      var id = (a.getAttribute("data-bs-target") || a.getAttribute("href") || "").replace("#", "");
+      var pane = id && document.getElementById(id);
+      if (pane) pane.setAttribute("data-tab-title", a.textContent.trim());
+    });
+  });
+});
+</script>
+
+<!-- PDF 링크는 새 창에서 열기 (RStudio Viewer에서는 외부 브라우저로 열림) -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('a[href$=".pdf"]').forEach(function (a) {
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener");
+  });
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./d2-01-descriptive-statistics.html" class="pagination-link" aria-label="제1장 자료의 특성과 기술통계">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">제1장 자료의 특성과 기술통계</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./d2-03-linear-regression.html" class="pagination-link" aria-label="제3장 선형회귀분석">
+        <span class="nav-page-text">제3장 선형회귀분석</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>재직자교육 · R 데이터 분석</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>made with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,87 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+$font-family-monospace: "JetBrains Mono", "D2Coding", Menlo, Consolas, monospace;
+$primary: #1f4e79;
+$headings-color: #1f3a5f;
+$font-size-base: 1rem;
+$line-height-base: 1.75;
+
+/*-- scss:rules --*/
+h1.title { font-weight: 800; letter-spacing: -0.02em; }
+h2 { margin-top: 2.6rem; padding-bottom: .3rem; border-bottom: 1px solid #e3e8ef; }
+h3 { margin-top: 1.8rem; }
+
+table { border-collapse: collapse; }
+table th, table td { padding: .45em .9em; vertical-align: top; }
+table tbody tr { border-bottom: 1px dashed #ccc; }
+
+div.sourceCode { border-radius: 6px; }
+code { font-size: .9em; }
+
+/* 세션 진행 정보 박스 */
+.session-meta {
+  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem;
+  padding: .8rem 1rem; margin: 1rem 0 1.5rem;
+  background: #f4f7fb; border-left: 4px solid $primary; border-radius: 4px;
+  font-size: .95rem;
+}
+.session-meta p { display: flex; flex-wrap: wrap; gap: .3rem 1.5rem; margin: 0; }
+
+/* 실습 타이머 */
+.timer {
+  display: inline-flex; align-items: baseline; gap: .8rem;
+  padding: .3rem .9rem; margin: .4rem 0 1rem;
+  border: 2px solid #1f4e79; border-radius: 8px; cursor: pointer; user-select: none;
+  font-family: $font-family-monospace;
+}
+.timer .timer-time { font-size: 1.4rem; font-weight: 600; color: #1f4e79; }
+.timer .timer-hint { font-size: .75rem; color: #888; font-family: $font-family-sans-serif; }
+.timer.timer-running { background: #eef5ff; }
+.timer.timer-warn { border-color: #d98e04; }
+.timer.timer-warn .timer-time { color: #d98e04; }
+.timer.timer-done { border-color: #c0392b; background: #fdecea; }
+.timer.timer-done .timer-time { color: #c0392b; }
+
+/* 결과 출력 영역 */
+div.cell-output pre { background: #fafafa; border-left: 3px solid #d9dee5; padding-left: .8rem; }
+
+@media print {
+  /* 인쇄(PDF): 화면 그대로 + 탭 내용 모두 펼치기, 정답·타이머·탐색 메뉴 제외 */
+  @page { size: A4; margin: 14mm 12mm; }
+  #quarto-sidebar, #quarto-margin-sidebar, .quarto-alternate-formats, .nav-page,
+  nav.quarto-page-breadcrumbs, .nav-footer, #quarto-search, .quarto-secondary-nav { display: none !important; }
+  #quarto-content, main.content { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; grid-column: 1 / -1 !important; }
+  body { font-size: 10.5pt; }
+  .timer, .answer-box, .session-meta a, .code-copy-button { display: none !important; }
+  .panel-tabset .nav-tabs { display: none !important; }
+  .callout:not(.answer-box) .callout-collapse.collapse { display: block !important; height: auto !important; }
+  .callout:not(.answer-box) .callout-btn-toggle { display: none !important; }
+  .panel-tabset .tab-content { border: none !important; padding: 0 !important; }
+  .panel-tabset .tab-content > .tab-pane { display: block !important; opacity: 1 !important; }
+  .panel-tabset .tab-pane[data-tab-title]::before {
+    content: "▸ " attr(data-tab-title); display: block; font-weight: 700; color: #1f3a5f;
+    margin: .8rem 0 .3rem; border-bottom: 1px solid #e3e8ef;
+  }
+  pre, pre code, div.sourceCode { white-space: pre-wrap !important; overflow: visible !important; }
+  div.sourceCode, div.cell-output, table, img, .callout { break-inside: avoid; }
+  h1, h2, h3 { break-after: avoid; }
+}
+
+
+/* 문서: 이미지가 있는 좌우 배치는 위(이미지) · 아래(내용)로 쌓기. 슬라이드는 그대로 좌우 배치 */
+.columns:has(img) { display: block; }
+.columns:has(img) > .column { width: 100% !important; }
+.columns:has(img) > .column + .column { margin-top: 1rem; }
+.columns:has(img) img { display: block; margin: 0 auto; max-width: 100%; }
+
+/* 다이어그램: 본문 폭 전체 사용 */
+img.diagram, img.diagram-lg { width: 100%; height: auto; display: block; margin: .5rem auto 1rem; }
+
+/* 2일차 안내 페이지의 장 소개 카드 */
+.learning-card { margin: 1.5em 0; padding: .3em 1.1em; border-left: 4px solid #d9dee5; background: #fafbfc; border-radius: 4px; }
+
+/* 내려받기 표 */
+.download-table td:first-child { white-space: nowrap; }
+
+/* 코드 글꼴 합자 끄기: <- 가 화살표 한 글자(←)로 보이지 않도록 */
+code, pre, .sourceCode, .cell-output { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
