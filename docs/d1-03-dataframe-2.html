@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3·4교시 · 데이터프레임 다루기 II – R 데이터 분석 · 재직자교육</title>
+<title>3·4교시 · 데이터프레임 다루기 II – R로 시작하는 스포츠 데이터 분석</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -134,7 +134,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">R 데이터 분석 · 재직자교육</a> 
+      <a href="./">R로 시작하는 스포츠 데이터 분석</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -147,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">R 데이터 분석 · 재직자교육</span></a>
+ <span class="menu-text">R로 시작하는 스포츠 데이터 분석</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -1118,11 +1118,11 @@ $ grade       &lt;chr&gt; "4등급", "2등급", "3등급", "5등급", "1등급",
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>fit <span class="sc">%&gt;%</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 17
-  id    stage  sex     age center region exercise    height weight fat_pct  grip
-  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-1 A16   성인   M        61 라온   대전   주 1~2회     166.7   78.4    29.2  35.8
-2 A08   성인   F        31 라온   대전   주 3회 이상  158.4   53      26.6  34  
-3 E04   어르신 M        79 누리   경기   주 1~2회     168.6   62.8    30.3  25.1
+  id    stage sex     age center region exercise    height weight fat_pct  grip
+  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+1 A12   성인  M        NA 라온   대전   주 1회 미만  178.8   77.5    25.6  38.7
+2 A13   성인  M        25 가람   서울   주 1회 미만  177.5   69.9    28    40.9
+3 A10   성인  F        45 누리   경기   주 1회 미만  161.7   47.8    29.2  21.8
 # ℹ 6 more variables: situp &lt;dbl&gt;, sit_reach &lt;dbl&gt;, shuttle &lt;dbl&gt;,
 #   chair_stand &lt;dbl&gt;, walk_2min &lt;dbl&gt;, grade &lt;chr&gt;</code></pre>
 </div>
@@ -2318,7 +2318,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>재직자교육 · R 데이터 분석</p>
+<p>한국스포츠과학원 재직자교육 · 서울시립대학교 빅데이터 혁신융합대학 사업단</p>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
